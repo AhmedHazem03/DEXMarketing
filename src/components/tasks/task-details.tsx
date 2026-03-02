@@ -384,7 +384,7 @@ export function TaskDetails({
         <Sheet open={open} onOpenChange={onOpenChange}>
             <SheetContent
                 side={isAr ? 'left' : 'right'}
-                className="w-full sm:max-w-xl p-0 flex flex-col"
+                className="w-full sm:max-w-xl p-0 flex flex-col overflow-hidden h-full"
             >
                 {/* Accessibility: Always render a hidden title if visible title is missing */}
                 <SheetTitle className="sr-only">
@@ -633,7 +633,7 @@ export function TaskDetails({
                         <Separator />
 
                         {/* Tabs: Description, Comments, Attachments */}
-                        <Tabs defaultValue="description" className="flex-1 flex flex-col min-h-0">
+                        <Tabs defaultValue="description" className="flex-1 flex flex-col min-h-0 overflow-hidden">
                             <TabsList className="mx-6 mt-4 justify-start w-auto">
                                 <TabsTrigger value="description">
                                     {isAr ? 'الوصف' : 'Description'}
@@ -659,7 +659,7 @@ export function TaskDetails({
                             </TabsList>
 
                             {/* Description Tab */}
-                            <TabsContent value="description" className="flex-1 px-6 py-4">
+                            <TabsContent value="description" className="flex-1 px-6 py-4 overflow-y-auto">
                                 {task.description ? (
                                     <p className="text-sm whitespace-pre-wrap leading-relaxed">
                                         {task.description}
@@ -684,8 +684,8 @@ export function TaskDetails({
                             </TabsContent>
 
                             {/* Comments Tab */}
-                            <TabsContent value="comments" className="flex-1 flex flex-col min-h-0 px-6 pb-4">
-                                <ScrollArea className="flex-1 -mx-6 px-6" style={{ maxHeight: 'calc(100vh - 400px)' }}>
+                            <TabsContent value="comments" className="flex-1 flex flex-col min-h-0 overflow-hidden px-6 pb-4">
+                                <ScrollArea className="flex-1 -mx-6 px-6 min-h-0">
                                     <div className="divide-y">
                                         {task.comments?.length === 0 ? (
                                             <p className="text-sm text-muted-foreground text-center py-8">
@@ -735,7 +735,7 @@ export function TaskDetails({
                             </TabsContent>
 
                             {/* Attachments Tab */}
-                            <TabsContent value="attachments" className="flex-1 px-6 pb-4 overflow-y-auto">
+                            <TabsContent value="attachments" className="flex-1 px-6 pb-4 overflow-y-auto min-h-0">
                                 <div className="space-y-2">
                                     {task.attachments?.length === 0 ? (
                                         <p className="text-sm text-muted-foreground text-center py-8">
