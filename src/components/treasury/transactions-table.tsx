@@ -640,7 +640,7 @@ export function TransactionsTable() {
                     {typeFilter !== 'all' && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {typeFilter === 'income' ? (isAr ? 'إيراد' : 'Income') : (isAr ? 'مصروف' : 'Expense')}
-                            <button onClick={() => setTypeFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة فلتر النوع' : 'Remove type filter'} onClick={() => setTypeFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -648,7 +648,7 @@ export function TransactionsTable() {
                     {categoryFilter !== 'all' && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {getCategoryLabel(categoryFilter, isAr)}
-                            <button onClick={() => setCategoryFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة فلتر الفئة' : 'Remove category filter'} onClick={() => setCategoryFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -658,7 +658,7 @@ export function TransactionsTable() {
                             {paymentMethodFilter === 'cash'
                                 ? (isAr ? 'نقد' : 'Cash')
                                 : (isAr ? 'محفظة إلكترونية' : 'Mobile Wallet')}
-                            <button onClick={() => setPaymentMethodFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة فلتر طريقة الدفع' : 'Remove payment method filter'} onClick={() => setPaymentMethodFilter('all')} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -666,7 +666,7 @@ export function TransactionsTable() {
                     {dateFrom && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {isAr ? 'من: ' : 'From: '}{format(dateFrom, 'PP', { locale: isAr ? ar : enUS })}
-                            <button onClick={() => setDateFrom(undefined)} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة تاريخ البداية' : 'Remove start date'} onClick={() => setDateFrom(undefined)} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -674,7 +674,7 @@ export function TransactionsTable() {
                     {dateTo && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {isAr ? 'إلى: ' : 'To: '}{format(dateTo, 'PP', { locale: isAr ? ar : enUS })}
-                            <button onClick={() => setDateTo(undefined)} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة تاريخ النهاية' : 'Remove end date'} onClick={() => setDateTo(undefined)} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -682,7 +682,7 @@ export function TransactionsTable() {
                     {minAmount && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {isAr ? 'أدنى: ' : 'Min: '}{minAmount} ج.م
-                            <button onClick={() => setMinAmount('')} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة الحد الأدنى' : 'Remove min amount'} onClick={() => setMinAmount('')} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
@@ -690,7 +690,7 @@ export function TransactionsTable() {
                     {maxAmount && (
                         <Badge variant="secondary" className="gap-1 pe-1">
                             {isAr ? 'أقصى: ' : 'Max: '}{maxAmount} ج.م
-                            <button onClick={() => setMaxAmount('')} className="ms-1 rounded-full hover:bg-muted p-0.5">
+                            <button type="button" aria-label={isAr ? 'إزالة الحد الأقصى' : 'Remove max amount'} onClick={() => setMaxAmount('')} className="ms-1 rounded-full hover:bg-muted p-0.5">
                                 <X className="h-3 w-3" />
                             </button>
                         </Badge>
