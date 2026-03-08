@@ -24,6 +24,11 @@ export const EXPENSE_CATEGORIES: CategoryOption[] = [
         value: 'social',
         label_en: 'Social Media',
         label_ar: 'سوشيال ميديا'
+    },
+    {
+        value: 'advance',
+        label_en: 'Advance',
+        label_ar: 'سلفة'
     }
 ] as const
 

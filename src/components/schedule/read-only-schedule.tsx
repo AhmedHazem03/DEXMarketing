@@ -321,7 +321,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                         </Badge>
                     </div>
 
-                    <ScrollArea className="h-[420px] sm:h-[520px] pe-1">
+                    <ScrollArea className="h-[520px] sm:h-[680px] pe-1">
                         <div className="space-y-3 pb-2">
                             {selectedSchedules.map((schedule) => {
                                 const overdue = isScheduleOverdue(schedule)
@@ -342,12 +342,14 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                                 : 'bg-blue-500'
 
                                 const cardBg = overdue
-                                    ? 'border-red-200 dark:border-red-900 bg-red-50/40 dark:bg-red-950/15'
+                                    ? 'border-red-400 dark:border-red-700'
                                     : schedule.status === 'completed'
-                                        ? 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/30 dark:bg-emerald-950/10'
+                                        ? 'border-emerald-300 dark:border-emerald-700'
                                         : schedule.status === 'in_progress'
-                                            ? 'border-amber-200 dark:border-amber-900 bg-amber-50/30 dark:bg-amber-950/10'
-                                            : 'border-border bg-card hover:bg-muted/30'
+                                            ? 'border-amber-300 dark:border-amber-700'
+                                            : schedule.status === 'cancelled'
+                                                ? 'border-slate-300 dark:border-slate-600'
+                                                : 'border-border'
 
                                 return (
                                     <div
@@ -358,19 +360,19 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                         )}
                                     >
                                         {/* Colored top bar */}
-                                        <div className={cn('h-1 w-full', accentColor)} />
+                                        <div className={cn('h-1.5 w-full', accentColor)} />
 
-                                        <div className="p-4 space-y-3">
+                                        <div className="p-5 space-y-4">
                                             {/* ── Title row ── */}
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex-1 min-w-0">
                                                     <h4 className="font-semibold text-base leading-tight mb-1.5 text-foreground">
                                                         {schedule.title}
                                                     </h4>
-                                                    <div className="flex flex-wrap gap-1.5">
+                                                    <div className="flex flex-wrap gap-2">
                                                         {/* Status badge */}
                                                         <span className={cn(
-                                                            'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold',
+                                                            'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold',
                                                             overdue
                                                                 ? 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'
                                                                 : schedule.status === 'completed'
@@ -381,14 +383,14 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                                                             ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
                                                                             : 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
                                                         )}>
-                                                            <span className={cn('w-1.5 h-1.5 rounded-full', accentColor)} />
+                                                            <span className={cn('w-2 h-2 rounded-full', accentColor)} />
                                                             {overdue
                                                                 ? (isAr ? 'متأخر' : 'Overdue')
                                                                 : (isAr ? statusCfg.labelAr : statusCfg.label)}
                                                         </span>
                                                         {/* Department */}
                                                         {schedule.department && (
-                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400">
+                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400">
                                                                 <Briefcase className="h-2.5 w-2.5" />
                                                                 {isAr
                                                                     ? schedule.department === 'photography' ? 'التصوير'
@@ -401,7 +403,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                                         )}
                                                         {/* Type */}
                                                         {schedule.schedule_type && (
-                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
+                                                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-medium bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
                                                                 {schedule.schedule_type === 'reels' ? '📹' : '📝'}
                                                                 {schedule.schedule_type === 'reels' ? (isAr ? 'ريلز' : 'Reels') : (isAr ? 'بوست' : 'Post')}
                                                             </span>
@@ -409,7 +411,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                                         {/* Approval */}
                                                         {schedule.approval_status && schedule.approval_status !== 'pending' && (
                                                             <span className={cn(
-                                                                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold',
+                                                                'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm font-semibold',
                                                                 schedule.approval_status === 'approved'
                                                                     ? 'bg-teal-100 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400'
                                                                     : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
@@ -430,39 +432,39 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                             {(schedule.start_time || schedule.location || schedule.client || schedule.company_name || schedule.project || schedule.task) && (
                                                 <div className="flex flex-wrap gap-2">
                                                     {schedule.start_time && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <Clock className="h-3 w-3 text-primary shrink-0" />
-                                                            <span className="font-medium">{formatTime12h(schedule.start_time)}</span>
-                                                            {schedule.end_time && <span className="text-muted-foreground">→ {formatTime12h(schedule.end_time)}</span>}
+                                                        <div className="flex items-center gap-2 text-sm bg-primary/10 text-primary rounded-full px-3 py-1.5 font-medium">
+                                                            <Clock className="h-3.5 w-3.5 shrink-0" />
+                                                            <span>{formatTime12h(schedule.start_time)}</span>
+                                                            {schedule.end_time && <span className="opacity-70">→ {formatTime12h(schedule.end_time)}</span>}
                                                         </div>
                                                     )}
                                                     {schedule.client && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <Building2 className="h-3 w-3 text-indigo-500 shrink-0" />
-                                                            <span className="font-medium">{schedule.client.name}</span>
+                                                        <div className="flex items-center gap-2 text-sm bg-indigo-100 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300 rounded-full px-3 py-1.5 font-medium">
+                                                            <Building2 className="h-3.5 w-3.5 shrink-0" />
+                                                            <span>{schedule.client.name}</span>
                                                         </div>
                                                     )}
                                                     {schedule.company_name && schedule.company_name !== schedule.client?.name && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <Building2 className="h-3 w-3 text-violet-500 shrink-0" />
-                                                            <span className="font-medium">{schedule.company_name}</span>
+                                                        <div className="flex items-center gap-2 text-sm bg-violet-100 text-violet-700 dark:bg-violet-950/40 dark:text-violet-300 rounded-full px-3 py-1.5 font-medium">
+                                                            <Building2 className="h-3.5 w-3.5 shrink-0" />
+                                                            <span>{schedule.company_name}</span>
                                                         </div>
                                                     )}
                                                     {schedule.location && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
+                                                        <div className="flex items-center gap-2 text-sm bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 rounded-full px-3 py-1.5 font-medium">
+                                                            <MapPin className="h-3.5 w-3.5 shrink-0" />
                                                             <span>{schedule.location}</span>
                                                         </div>
                                                     )}
                                                     {schedule.project && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <FolderOpen className="h-3 w-3 text-orange-500 shrink-0" />
+                                                        <div className="flex items-center gap-2 text-sm bg-orange-100 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300 rounded-full px-3 py-1.5 font-medium">
+                                                            <FolderOpen className="h-3.5 w-3.5 shrink-0" />
                                                             <span>{schedule.project.name}</span>
                                                         </div>
                                                     )}
                                                     {schedule.task && (
-                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
-                                                            <ListTodo className="h-3 w-3 text-cyan-500 shrink-0" />
+                                                        <div className="flex items-center gap-2 text-sm bg-cyan-100 text-cyan-700 dark:bg-cyan-950/40 dark:text-cyan-300 rounded-full px-3 py-1.5 font-medium">
+                                                            <ListTodo className="h-3.5 w-3.5 shrink-0" />
                                                             <span>{schedule.task.title}</span>
                                                         </div>
                                                     )}
@@ -471,19 +473,19 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
 
                                             {/* ── Assigned Members ── */}
                                             {members.length > 0 && (
-                                                <div className="flex items-center gap-2 flex-wrap">
-                                                    <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-                                                    <div className="flex -space-x-2 rtl:space-x-reverse">
-                                                        {members.slice(0, 6).map(m => (
-                                                            <Avatar key={m.id} className="h-6 w-6 border-2 border-background ring-1 ring-muted">
+                                                    <div className="flex items-center gap-3 flex-wrap">
+                                                        <Users className="h-4 w-4 text-muted-foreground shrink-0" />
+                                                        <div className="flex -space-x-2 rtl:space-x-reverse">
+                                                            {members.slice(0, 6).map(m => (
+                                                                <Avatar key={m.id} className="h-8 w-8 border-2 border-background ring-1 ring-muted">
                                                                 <AvatarImage src={m.avatar_url || ''} />
-                                                                <AvatarFallback className="text-[9px] bg-primary/20 font-bold text-primary">
+                                                                    <AvatarFallback className="text-xs bg-primary/20 font-bold text-primary">
                                                                     {m.name?.charAt(0) || '?'}
                                                                 </AvatarFallback>
                                                             </Avatar>
                                                         ))}
                                                     </div>
-                                                    <span className="text-xs text-muted-foreground">
+                                                    <span className="text-sm text-muted-foreground font-medium">
                                                         {members.map(m => m.name?.split(' ')[0]).join('، ')}
                                                     </span>
                                                 </div>
@@ -498,8 +500,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
 
                                             {/* ── Notes ── */}
                                             {schedule.notes && (
-                                                <div className="flex gap-2 bg-muted/40 rounded-lg px-3 py-2">
-                                                    <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
+                                                <div className="flex gap-2 border-s-2 border-primary/40 ps-3 py-1">
                                                     <p className="text-xs text-muted-foreground italic leading-relaxed">{schedule.notes}</p>
                                                 </div>
                                             )}
@@ -558,7 +559,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                                                                 href={link.url}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
-                                                                className="flex items-start gap-2 group rounded-lg border bg-muted/40 hover:bg-primary/5 hover:border-primary/30 px-3 py-2 transition-colors"
+                                                                className="flex items-start gap-2 group rounded-lg border border-primary/20 bg-primary/5 hover:bg-primary/10 hover:border-primary/40 px-3 py-2 transition-colors"
                                                             >
                                                                 <Link2 className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
                                                                 <div className="min-w-0">
