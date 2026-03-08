@@ -98,10 +98,23 @@ export function LoginForm() {
                     router.push('/team-leader')
                     break;
                 case 'creator':
+                case 'designer':
                     router.push('/creator')
                     break;
                 case 'accountant':
                     router.push('/accountant')
+                    break;
+                case 'photographer':
+                    router.push('/photographer')
+                    break;
+                case 'videographer':
+                    router.push('/videographer')
+                    break;
+                case 'editor':
+                    router.push('/editor')
+                    break;
+                case 'account_manager':
+                    router.push('/account-manager')
                     break;
                 default:
                     router.push('/client')

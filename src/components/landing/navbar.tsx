@@ -62,21 +62,13 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
             <div className="container mx-auto px-6">
                 <div className="flex items-center justify-between h-20">
                     {/* Logo */}
-                    <style>{`
-                        @keyframes logo-pulse {
-                            0%, 100% { filter: drop-shadow(0 0 6px rgba(251,191,36,0.30)); }
-                            50%       { filter: drop-shadow(0 0 18px rgba(251,191,36,0.75)) drop-shadow(0 0 32px rgba(251,191,36,0.30)); }
-                        }
-                        .logo-pulse { animation: logo-pulse 8s ease-in-out infinite; }
-                        .logo-pulse:hover { animation: none; filter: drop-shadow(0 0 22px rgba(251,191,36,0.85)); transform: scale(1.05); }
-                    `}</style>
                     <Link href="/" className="group flex items-center">
                         <Image
                             src="/images/DEX LOGO 2.png"
                             alt="DEX Advertising"
                             width={160}
                             height={80}
-                            className="logo-pulse w-[88px] h-auto object-contain transition-transform duration-300"
+                            className="w-[88px] h-auto object-contain transition-transform duration-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.30)] hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.85)] hover:scale-105"
                             priority
                         />
                     </Link>

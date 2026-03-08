@@ -101,7 +101,7 @@ export function HeroOverlay() {
                         initial="hidden"
                         animate={isIntroComplete ? "visible" : "hidden"}
                         // التموضع المطلق أسفل يسار الحاوية ليكون تحت/فوق كلمة "يبدأ"
-                        className="absolute -bottom-6 sm:-bottom-10 -left-4 sm:-left-8 z-20 pointer-events-none"
+                        className="absolute -bottom-5 sm:-bottom-4 -left-3 sm:-left-8 z-10 pointer-events-none"
                     >
                         {/* النص باستخدام الخط اليدوي مع دوران خفيف */}
                         <span 
