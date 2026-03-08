@@ -224,9 +224,10 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
                         </div>
                     ) : (
                         <div className="grid grid-cols-7 gap-1 sm:gap-2">
-                            {/* Week days header */}
-                            {[6, 0, 1, 2, 3, 4, 5].map((day) => {
-                                const dayDate = new Date(2024, 0, day + 1)
+                            {/* Week days header - starts Saturday (weekStartsOn: 6) */}
+                            {/* Jan 6, 2024 = Sat, Jan 7 = Sun, ..., Jan 12 = Fri */}
+                            {[6, 7, 8, 9, 10, 11, 12].map((day) => {
+                                const dayDate = new Date(2024, 0, day)
                                 return (
                                     <div
                                         key={day}

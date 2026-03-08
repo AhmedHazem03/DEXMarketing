@@ -258,6 +258,7 @@ export function ClientAccountsPage() {
                     {dateFrom && (
                         <button
                             type="button"
+                            aria-label={isAr ? 'مسح تاريخ البداية' : 'Clear start date'}
                             onClick={() => setDateFrom('')}
                             className="absolute end-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         >
@@ -278,6 +279,7 @@ export function ClientAccountsPage() {
                     {dateTo && (
                         <button
                             type="button"
+                            aria-label={isAr ? 'مسح تاريخ النهاية' : 'Clear end date'}
                             onClick={() => setDateTo('')}
                             className="absolute end-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                         >
