@@ -199,7 +199,7 @@ export function HeroOverlay() {
                                 size="lg"
                                 className="group relative overflow-hidden rounded-2xl bg-primary px-10 py-7 text-lg font-bold text-background shadow-[0_0_30px_rgba(251,191,36,0.22),0_0_60px_rgba(251,191,36,0.08)] transition-all duration-500 hover:bg-primary/90 hover:shadow-[0_0_50px_rgba(251,191,36,0.32),0_0_80px_rgba(251,191,36,0.12)] hover:scale-[1.02]"
                             >
-                                <Link href="/register">
+                                <Link href="/contact">
                                     <span className="relative z-10 flex items-center gap-2">
                                         <Rocket className="h-5 w-5 transition-transform duration-300 group-hover:-translate-y-1 group-hover:rotate-12" />
                                         {isAr ? 'ابدأ مهمتك' : 'Start Your Mission'}
@@ -212,10 +212,12 @@ export function HeroOverlay() {
                                 variant="outline"
                                 className="group rounded-2xl border-2 border-primary/40 bg-primary/10 px-10 py-7 text-lg font-semibold text-primary backdrop-blur-md hover:border-primary hover:bg-primary hover:text-background hover:shadow-[0_0_30px_rgba(251,191,36,0.16)] transition-all duration-400 hover:scale-[1.02]"
                             >
+                                <Link href="/portfolio">
                                 <span className="flex items-center gap-2">
                                     <Sparkles className="h-4 w-4 text-primary/70 transition-colors duration-300 group-hover:text-background" />
                                     {isAr ? 'شاهد أعمالنا' : 'Explore Work'}
                                 </span>
+                                </Link>
                             </Button>
                         </motion.div>
 

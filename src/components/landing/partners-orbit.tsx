@@ -135,10 +135,10 @@ export function PartnersOrbit() {
   const isAr    = locale === 'ar'
   const [isPaused, setIsPaused] = useState(false)
 
-  const items  = [...PARTNERS, ...PARTNERS, ...PARTNERS]
+  const items  = [...PARTNERS, ...PARTNERS, ...PARTNERS, ...PARTNERS]
   const dir    = isAr ? 'right' : 'left'
-  const from   = dir === 'left' ? '0%'       : '-33.333%'
-  const to     = dir === 'left' ? '-33.333%' : '0%'
+  const from   = dir === 'left' ? '0%'       : '-25%'
+  const to     = dir === 'left' ? '-25%' : '0%'
 
   return (
     <section
@@ -202,7 +202,7 @@ export function PartnersOrbit() {
             style={{
               display:            'flex',
               alignItems:         'flex-start',
-              animation:          'marquee-single 40s linear infinite',
+              animation:          'marquee-single 15s linear infinite',
               animationPlayState: isPaused ? 'paused' : 'running',
               willChange:         'transform',
             }}

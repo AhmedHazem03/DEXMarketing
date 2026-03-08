@@ -52,7 +52,10 @@ export function ServiceCard({ item, index, isAr, gradient, accent, span, IconCom
                         <p className="text-sm leading-relaxed text-white/50">{item.description || ''}</p>
                     </div>
 
-                     
+                    <div className="mt-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-white/30 transition-colors duration-300 group-hover:text-primary">
+                        <span>{isAr ? 'اعرف المزيد' : 'Learn more'}</span>
+                        <span className="transition-transform duration-300 group-hover:translate-x-1 rtl:group-hover:-translate-x-1">→</span>
+                    </div>
                 </div>
             </GlareHover>
         </motion.div>
@@ -112,7 +115,6 @@ export function FallbackServiceCard({ service, isAr, index }: FallbackServiceCar
                         </p>
                     </div>
 
-                     
                 </div>
             </GlareHover>
         </motion.div>
