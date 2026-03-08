@@ -34,7 +34,7 @@ export function HeroOverlay() {
 
     return (
         <>
-            <div ref={ref} className="relative z-10 grid min-h-[100dvh] grid-cols-1 lg:grid-cols-2 items-center gap-12 px-6 py-32 container mx-auto">
+            <div ref={ref} className="relative z-10 grid min-h-[100dvh] grid-cols-1 lg:grid-cols-2 items-center gap-12 px-6 pt-24 pb-16 md:pt-28 md:pb-20 lg:pt-24 lg:pb-16 container mx-auto">
                 {/* Text Content Column */}
                 <div className="w-full flex flex-col justify-center items-start">
                     <motion.div
@@ -59,7 +59,7 @@ export function HeroOverlay() {
                             >
                                 <Rocket className="h-5 w-5 text-primary drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" />
                             </motion.div>
-                            <span className="bg-gradient-to-r from-primary via-yellow-300 to-orange-400 bg-clip-text text-sm font-bold text-transparent">
+                            <span className="text-sm font-bold text-primary">
                                 {isAr ? 'نطلق علامتك التجارية إلى المدار' : 'Launching Brands Into Orbit'}
                             </span>
                             <Sparkles className="h-3.5 w-3.5 text-primary/60" />
@@ -197,7 +197,7 @@ export function HeroOverlay() {
                             <Button
                                 asChild
                                 size="lg"
-                                className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-yellow-400 to-orange-500 px-10 py-7 text-lg font-bold text-background shadow-[0_0_30px_rgba(251,191,36,0.25),0_0_60px_rgba(251,191,36,0.1)] transition-all duration-500 hover:shadow-[0_0_50px_rgba(251,191,36,0.4),0_0_80px_rgba(251,191,36,0.15)] hover:brightness-110 hover:scale-[1.02]"
+                                className="group relative overflow-hidden rounded-2xl bg-primary px-10 py-7 text-lg font-bold text-background shadow-[0_0_30px_rgba(251,191,36,0.22),0_0_60px_rgba(251,191,36,0.08)] transition-all duration-500 hover:bg-primary/90 hover:shadow-[0_0_50px_rgba(251,191,36,0.32),0_0_80px_rgba(251,191,36,0.12)] hover:scale-[1.02]"
                             >
                                 <Link href="/register">
                                     <span className="relative z-10 flex items-center gap-2">
@@ -205,22 +205,15 @@ export function HeroOverlay() {
                                         {isAr ? 'ابدأ مهمتك' : 'Start Your Mission'}
                                         <Arrow className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1" />
                                     </span>
-                                    {!prefersReducedMotion && (
-                                        <motion.div
-                                            className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                                            animate={{ x: ['120%', '-120%'] }}
-                                            transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3.5 }}
-                                        />
-                                    )}
                                 </Link>
                             </Button>
                             <Button
                                 size="lg"
                                 variant="outline"
-                                className="group rounded-2xl border-2 border-white/10 bg-white/[0.03] px-10 py-7 text-lg font-semibold text-white backdrop-blur-md hover:border-primary/30 hover:bg-white/[0.07] hover:shadow-[0_0_30px_rgba(251,191,36,0.08)] transition-all duration-400 hover:scale-[1.02]"
+                                className="group rounded-2xl border-2 border-primary/40 bg-primary/10 px-10 py-7 text-lg font-semibold text-primary backdrop-blur-md hover:border-primary hover:bg-primary hover:text-background hover:shadow-[0_0_30px_rgba(251,191,36,0.16)] transition-all duration-400 hover:scale-[1.02]"
                             >
                                 <span className="flex items-center gap-2">
-                                    <Sparkles className="h-4 w-4 text-white/40 transition-colors duration-300 group-hover:text-primary/60" />
+                                    <Sparkles className="h-4 w-4 text-primary/70 transition-colors duration-300 group-hover:text-background" />
                                     {isAr ? 'شاهد أعمالنا' : 'Explore Work'}
                                 </span>
                             </Button>

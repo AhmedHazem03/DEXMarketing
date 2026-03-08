@@ -7,7 +7,7 @@ export interface StatsCardProps {
     icon: React.ReactNode
     label: string
     value: number
-    color: 'primary' | 'sky' | 'amber' | 'emerald' | 'red'
+    color: 'primary' | 'sky' | 'amber' | 'emerald' | 'red' | 'orange'
     active: boolean
     onClick: () => void
     pulse?: boolean

@@ -27,7 +27,7 @@ export default async function PortfolioPage(props: { params: Promise<{ locale: s
             <Navbar />
 
             {/* Page Header */}
-            <div className="pt-36 pb-20 relative text-white text-center">
+            <div className="relative pt-32 pb-14 text-center text-white md:pt-36 md:pb-16">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#011118] via-[#022026] to-[#022026]" />
                 <div className="absolute top-0 left-0 w-[400px] h-[300px] bg-cyan-500/[0.03] blur-[120px] rounded-full" />
                 <div className="container relative z-10 px-6">
@@ -48,7 +48,7 @@ export default async function PortfolioPage(props: { params: Promise<{ locale: s
 
             <PortfolioSection />
 
-            <div className="py-16 bg-[#022026] text-center">
+            <div className="bg-[#022026] py-10 text-center md:py-12">
                 <div className="container mx-auto px-6">
                     <p className="text-white/30 text-sm">
                         {isAr ? 'هل تريد رؤية المزيد؟ تواصل معنا لعرض ملف أعمالنا الكامل.' : 'Want to see more? Contact us for our full portfolio deck.'}

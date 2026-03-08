@@ -78,7 +78,7 @@ export function TestimonialsSection() {
     }, [prefersReducedMotion, isAr, marqueeControls])
 
     return (
-        <section id="testimonials" className="relative overflow-hidden py-40 bg-[#022026]" aria-labelledby="testimonials-heading">
+        <section id="testimonials" className="relative overflow-hidden bg-[#022026] py-24 md:py-28" aria-labelledby="testimonials-heading">
             {/* Background */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="section-divider absolute top-0 left-0 right-0" />
@@ -102,7 +102,7 @@ export function TestimonialsSection() {
                     </span>
                     <h2 id="testimonials-heading" className="mt-6 text-4xl font-black md:text-6xl lg:text-7xl text-glow-white">
                         {isAr ? 'ماذا يقول ' : 'What Clients '}
-                        <span className="bg-gradient-to-r from-primary via-yellow-300 to-orange-500 bg-clip-text text-transparent">
+                            <span className="text-primary">
                             {isAr ? 'عملاؤنا' : 'Transmit'}
                         </span>
                     </h2>

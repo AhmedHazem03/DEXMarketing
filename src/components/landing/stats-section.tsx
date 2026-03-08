@@ -135,7 +135,7 @@ export function StatsSection() {
   }, [handleIntersection])
 
   return (
-    <section className="relative py-32 overflow-hidden" id="stats" ref={ref}>
+    <section className="relative overflow-hidden py-20 md:py-24" id="stats" ref={ref}>
       {/* Background */}
       <div className="absolute inset-0 bg-transparent" />
       <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[#F2CB05]/15 to-transparent" />

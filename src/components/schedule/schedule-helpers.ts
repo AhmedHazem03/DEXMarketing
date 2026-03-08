@@ -1,12 +1,12 @@
 import type { ScheduleStatus } from '@/types/schedule'
 
-export function getStatusDot(status: ScheduleStatus, overdue: boolean): string {
+export function getStatusDot(status: ScheduleStatus, overdue: boolean, hasMissingItems = false): string {
     if (overdue) return 'bg-red-500'
     switch (status) {
         case 'completed': return 'bg-emerald-500'
         case 'in_progress': return 'bg-amber-400'
         case 'cancelled': return 'bg-gray-400'
-        default: return 'bg-sky-400'
+        default: return hasMissingItems ? 'bg-orange-500' : 'bg-sky-400'
     }
 }
 
@@ -20,12 +20,14 @@ export function getStatusBadgeClasses(status: ScheduleStatus, overdue: boolean):
     }
 }
 
-export function getCardBorderClass(status: ScheduleStatus, overdue: boolean): string {
+export function getCardBorderClass(status: ScheduleStatus, overdue: boolean, hasMissingItems = false): string {
     if (overdue) return 'border-red-500/40 hover:border-red-500/60'
     switch (status) {
         case 'completed': return 'border-emerald-500/30 hover:border-emerald-500/50'
         case 'in_progress': return 'border-amber-500/30 hover:border-amber-500/50'
-        default: return 'border-border hover:border-primary/30'
+        default: return hasMissingItems
+            ? 'border-orange-500/40 hover:border-orange-500/60'
+            : 'border-border hover:border-primary/30'
     }
 }
 
@@ -64,5 +66,12 @@ export const colorMap = {
         value: 'text-red-400',
         ring: 'ring-red-500/30',
         border: 'border-red-500/20',
+    },
+    orange: {
+        bg: 'bg-orange-500/10',
+        icon: 'text-orange-400',
+        value: 'text-orange-400',
+        ring: 'ring-orange-500/30',
+        border: 'border-orange-500/20',
     },
 } as const

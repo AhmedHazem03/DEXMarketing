@@ -32,7 +32,7 @@ export default async function ServicesPage(props: { params: Promise<{ locale: st
     return (
         <>
             {/* Page Header */}
-            <div className="pt-36 pb-20 relative text-white text-center">
+            <div className="relative pt-32 pb-14 text-center text-white md:pt-36 md:pb-16">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#011118] via-[#022026] to-[#011a1f]" />
                 <div className="absolute top-0 right-0 w-[400px] h-[300px] bg-[#F2CB05]/[0.03] blur-[120px] rounded-full" />
                 <div className="container relative z-10 px-6">
@@ -54,9 +54,9 @@ export default async function ServicesPage(props: { params: Promise<{ locale: st
             <ServicesSection />
 
             {/* Why Choose Us */}
-            <section className="py-24 bg-[#022026]">
+            <section className="bg-[#022026] py-16 md:py-20">
                 <div className="container mx-auto px-6">
-                    <div className="text-center mb-16">
+                    <div className="mb-10 text-center md:mb-12">
                         <span className="text-xs font-mono text-[#F2CB05]/70 uppercase tracking-[0.3em] mb-4 block">
                             {isAr ? '— لماذا نحن —' : '— Why Us —'}
                         </span>

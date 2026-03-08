@@ -489,7 +489,7 @@ export function ScheduleCalendar({ teamLeaderId, canCreate = true, userRole, sim
                     icon={<AlertTriangle className="h-5 w-5" />}
                     label={isAr ? 'النواقص' : 'Missing'}
                     value={monthStats.missingItems}
-                    color="amber"
+                    color="orange"
                     active={statusFilter === 'missing'}
                     onClick={() => setStatusFilter(statusFilter === 'missing' ? 'all' : 'missing')}
                     pulse={monthStats.missingItems > 0}
@@ -552,6 +552,7 @@ export function ScheduleCalendar({ teamLeaderId, canCreate = true, userRole, sim
                                     const isToday = isTodayFn(day)
                                     const hasOverdue = allDaySchedules.some(s => isScheduleOverdue(s))
                                     const hasCompleted = allDaySchedules.some(s => s.status === 'completed')
+                                    const hasMissingItems = allDaySchedules.some(s => s.missing_items && s.missing_items.trim() && s.missing_items_status !== 'resolved')
 
                                     return (
                                         <button
@@ -567,6 +568,7 @@ export function ScheduleCalendar({ teamLeaderId, canCreate = true, userRole, sim
                                                     : 'border-border/30',
                                                 isToday && !isSelected && 'border-primary/40',
                                                 hasOverdue && !isSelected && 'border-red-500/30',
+                                                !hasOverdue && hasMissingItems && !isSelected && 'border-orange-500/30',
                                             )}
                                         >
                                             {/* Day number */}
@@ -604,7 +606,9 @@ export function ScheduleCalendar({ teamLeaderId, canCreate = true, userRole, sim
                                                                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500'
                                                                         : s.status === 'in_progress'
                                                                             ? 'bg-amber-500/10 text-amber-400 border-amber-500'
-                                                                            : 'bg-sky-500/10 text-sky-300 border-sky-500'
+                                                                            : (s.missing_items && s.missing_items.trim() && s.missing_items_status !== 'resolved')
+                                                                                ? 'bg-orange-500/10 text-orange-400 border-orange-500'
+                                                                                : 'bg-sky-500/10 text-sky-300 border-sky-500'
                                                             )}
                                                         >
                                                             {/* Row 1: type badge + time */}
@@ -643,6 +647,7 @@ export function ScheduleCalendar({ teamLeaderId, canCreate = true, userRole, sim
                                                     {hasOverdue && <div className="w-1 h-1 rounded-full bg-red-500" />}
                                                     {hasCompleted && <div className="w-1 h-1 rounded-full bg-emerald-500" />}
                                                     {allDaySchedules.some(s => s.status === 'in_progress') && <div className="w-1 h-1 rounded-full bg-amber-400" />}
+                                                    {hasMissingItems && <div className="w-1 h-1 rounded-full bg-orange-500" />}
                                                 </div>
                                             )}
                                         </button>

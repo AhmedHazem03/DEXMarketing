@@ -42,7 +42,7 @@ export default async function AboutPage(props: { params: Promise<{ locale: strin
     return (
         <>
             {/* Page Header */}
-            <div className="pt-36 pb-20 relative text-white text-center">
+            <div className="relative pt-32 pb-14 text-center text-white md:pt-36 md:pb-16">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#011118] via-[#022026] to-[#022026]" />
                 <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-[#F2CB05]/[0.03] blur-[120px] rounded-full" />
                 <div className="container relative z-10 px-6">
@@ -61,12 +61,12 @@ export default async function AboutPage(props: { params: Promise<{ locale: strin
                 </div>
             </div>
 
-            <section className="py-24 bg-[#022026]">
+            <section className="bg-[#022026] py-16 md:py-20">
                 <div className="container mx-auto px-6">
-                    <div className="space-y-28">
+                    <div className="space-y-16 md:space-y-20">
 
                         {/* Our Story */}
-                        <div className="grid lg:grid-cols-2 gap-16 items-center">
+                        <div className="grid items-center gap-10 md:gap-12 lg:grid-cols-2">
                             <div className="order-2 lg:order-1 space-y-6">
                                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#F2CB05]/10 text-[#F2CB05] text-sm font-bold">
                                     <BookOpen className="w-4 h-4" />

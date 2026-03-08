@@ -217,18 +217,7 @@ export function ClientAccountsPage() {
                         <Banknote className="me-2 h-4 w-4" />
                         {isAr ? 'معاملة عميل' : 'Client Transaction'}
                     </Button>
-                    <Button
-                        onClick={() => {
-                            setSelectedAccountForTransaction(undefined)
-                            setTransactionMode('treasury')
-                            setAddTransactionOpen(true)
-                        }}
-                        variant="outline"
-                        size="sm"
-                    >
-                        <Banknote className="me-2 h-4 w-4" />
-                        {isAr ? 'معاملة خزنة' : 'Treasury Transaction'}
-                    </Button>
+
                 </div>
             </div>
 
@@ -406,12 +395,7 @@ export function ClientAccountsPage() {
                                                             <Banknote className="me-2 h-4 w-4" />
                                                             {isAr ? 'معاملة عميل' : 'Client Transaction'}
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem
-                                                            onClick={() => handleAddTransaction(account.id, 'treasury')}
-                                                        >
-                                                            <Banknote className="me-2 h-4 w-4" />
-                                                            {isAr ? 'معاملة خزنة' : 'Treasury Transaction'}
-                                                        </DropdownMenuItem>
+
                                                         {!isAccountant && (
                                                             <DropdownMenuItem
                                                                 onClick={() => setEditAccount(account)}

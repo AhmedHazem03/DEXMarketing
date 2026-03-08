@@ -51,7 +51,7 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
             <Navbar />
 
             {/* Page Header */}
-            <div className="pt-36 pb-20 relative text-white text-center">
+            <div className="relative pt-32 pb-14 text-center text-white md:pt-36 md:pb-16">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#011118] via-[#022026] to-[#022026]" />
                 <div className="absolute top-0 right-1/4 w-[400px] h-[300px] bg-[#F2CB05]/[0.03] blur-[120px] rounded-full" />
                 <div className="container relative z-10 px-6">
@@ -70,9 +70,9 @@ export default async function ContactPage(props: { params: Promise<{ locale: str
                 </div>
             </div>
 
-            <section className="py-24 bg-[#022026]">
+            <section className="bg-[#022026] py-16 md:py-20">
                 <div className="container mx-auto px-6">
-                    <div className="grid lg:grid-cols-2 gap-16 max-w-6xl mx-auto">
+                    <div className="mx-auto grid max-w-6xl gap-10 md:gap-12 lg:grid-cols-2">
 
                         {/* Contact Info */}
                         <div className="space-y-8">

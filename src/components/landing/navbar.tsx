@@ -101,7 +101,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                         {user ? (
                             <>
                                 <Link href={dashboardLink} className="hidden sm:block">
-                                    <Button className="rounded-xl bg-gradient-to-r from-primary to-orange-500 px-6 font-semibold text-background shadow-[0_0_20px_rgba(251,191,36,0.15)] hover:brightness-110 hover:shadow-[0_0_30px_rgba(251,191,36,0.25)]">
+                                    <Button className="rounded-xl bg-primary px-6 font-semibold text-background shadow-[0_0_20px_rgba(251,191,36,0.18)] transition-colors hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(251,191,36,0.28)]">
                                         {isAr ? 'لوحة التحكم' : 'Dashboard'}
                                     </Button>
                                 </Link>
@@ -121,7 +121,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                                     </Button>
                                 </Link>
                                 <Link href="/register">
-                                    <Button className="rounded-xl bg-gradient-to-r from-primary to-orange-500 px-6 font-semibold text-background shadow-[0_0_20px_rgba(251,191,36,0.15)] hover:brightness-110 hover:shadow-[0_0_30px_rgba(251,191,36,0.25)]">
+                                    <Button className="rounded-xl bg-primary px-6 font-semibold text-background shadow-[0_0_20px_rgba(251,191,36,0.18)] transition-colors hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(251,191,36,0.28)]">
                                         {isAr ? 'ابدأ الآن' : 'Get Started'}
                                     </Button>
                                 </Link>
@@ -132,7 +132,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="md:hidden rounded-xl text-white/50 hover:text-white hover:bg-white/[0.06]"
+                            className="md:hidden rounded-xl text-primary hover:text-background hover:bg-primary/90"
                             onClick={() => setIsMobileMenuOpen((prev) => !prev)}
                             aria-label="Toggle menu"
                         >
@@ -144,7 +144,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
 
             {/* Scroll progress bar */}
             <motion.div
-                className="absolute bottom-0 left-0 h-[2px] origin-left bg-gradient-to-r from-primary via-yellow-300 to-orange-500"
+                className="absolute bottom-0 left-0 h-[2px] origin-left bg-primary"
                 style={{ width: progressWidth, opacity: isScrolled ? 1 : 0 }}
             />
 
@@ -174,7 +174,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                                         <Link href={dashboardLink} onClick={closeMobileMenu} className="block rounded-xl px-4 py-3 text-primary font-bold">
                                             {isAr ? 'لوحة التحكم' : 'Dashboard'}
                                         </Link>
-                                        <button onClick={handleLogout} className="block w-full text-start rounded-xl px-4 py-3 text-red-400/70 font-bold">
+                                        <button onClick={handleLogout} className="block w-full text-start rounded-xl px-4 py-3 text-primary font-bold transition-colors hover:bg-primary/10">
                                             {isAr ? 'تسجيل الخروج' : 'Logout'}
                                         </button>
                                     </>

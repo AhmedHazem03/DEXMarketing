@@ -47,7 +47,7 @@ export function ProcessSection() {
     const prefersReducedMotion = useReducedMotion()
 
     return (
-        <section className="relative overflow-hidden py-40">
+        <section className="relative overflow-hidden py-24 md:py-28">
             {/* Background */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute left-1/2 top-0 h-[1px] w-[60%] -translate-x-1/2 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -68,7 +68,7 @@ export function ProcessSection() {
                         </span>
                         <h2 className="mt-6 mb-6 text-4xl font-black md:text-5xl lg:text-6xl text-glow-white">
                             {isAr ? 'ليست مجرد ' : 'Not Just an '}
-                            <span className="bg-gradient-to-r from-primary via-yellow-300 to-orange-500 bg-clip-text text-transparent">
+                            <span className="text-primary">
                                 {isAr ? 'وكالة' : 'Agency'}
                             </span>
                         </h2>
@@ -96,7 +96,7 @@ export function ProcessSection() {
                                         glareSize={200}
                                         className="p-6"
                                     >
-                                        <div className="text-3xl font-black bg-gradient-to-r from-primary to-orange-400 bg-clip-text text-transparent">
+                                        <div className="text-3xl font-black text-primary">
                                             {stat.value}
                                         </div>
                                         <div className="mt-1 text-sm text-white/40">

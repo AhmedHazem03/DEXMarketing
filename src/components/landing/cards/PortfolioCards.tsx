@@ -54,9 +54,10 @@ export function PortfolioItem({ item, index, gradientColor, isPlaying, onPlay }:
                         <button
                             className="absolute inset-0 flex items-center justify-center z-10"
                             onClick={onPlay}
+                            aria-label={item.title ? `Play video: ${item.title}` : 'Play video'}
                         >
-                            <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/25 flex items-center justify-center hover:bg-white/30 hover:border-white/40 transition-all duration-300 shadow-lg">
-                                <Play className="h-8 w-8 text-white fill-white" />
+                            <div className="w-16 h-16 rounded-full bg-primary/90 backdrop-blur-sm border border-primary flex items-center justify-center hover:bg-primary hover:border-primary transition-all duration-300 shadow-lg">
+                                <Play className="h-8 w-8 text-background fill-background" />
                             </div>
                         </button>
                     </div>

@@ -81,7 +81,7 @@ export function ContactSection() {
   }
 
   return (
-    <section className="relative py-28 bg-transparent overflow-hidden" id="contact" aria-labelledby="contact-heading">
+    <section className="relative overflow-hidden bg-transparent py-20 md:py-24" id="contact" aria-labelledby="contact-heading">
       {/* ── Floating decorative elements ── */}
       <GlowOrb color="#F2CB05" size={400} blur={140} opacity={0.03} className="top-0 -end-40" />
       <GlowOrb color="#22D3EE" size={300} blur={100} opacity={0.02} className="bottom-0 -start-32" />

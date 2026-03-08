@@ -45,7 +45,7 @@ export default async function TermsPage(props: { params: Promise<{ locale: strin
         <main className="min-h-screen bg-[#022026] font-sans">
             <Navbar />
 
-            <div className="pt-36 pb-16 relative text-white text-center">
+            <div className="relative pt-32 pb-12 text-center text-white md:pt-36 md:pb-14">
                 <div className="absolute inset-0 bg-gradient-to-b from-[#011118] via-[#022026] to-[#022026]" />
                 <div className="container relative z-10 px-6">
                     <span className="inline-block text-[#F2CB05]/70 text-xs font-mono tracking-[0.3em] uppercase mb-4">
@@ -62,7 +62,7 @@ export default async function TermsPage(props: { params: Promise<{ locale: strin
                 </div>
             </div>
 
-            <section className="py-20 bg-[#022026]">
+            <section className="bg-[#022026] py-14 md:py-16">
                 <div className="container mx-auto px-6 max-w-4xl">
                     <div className="border border-white/5 bg-white/[0.02] rounded-2xl p-8 md:p-12">
                         <div className="max-w-none text-white/40 whitespace-pre-wrap leading-relaxed text-sm">

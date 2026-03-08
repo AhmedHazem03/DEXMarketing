@@ -41,7 +41,7 @@ export function PortfolioSection() {
     const hasCmsData = cmsItems && cmsItems.length > 0
 
     return (
-        <section id="portfolio" className="py-32 relative overflow-hidden bg-transparent" aria-labelledby="portfolio-heading">
+        <section id="portfolio" className="relative overflow-hidden bg-transparent py-24 md:py-28" aria-labelledby="portfolio-heading">
             <div className="container relative z-10 mx-auto px-6">
                 {/* Header */}
                 <motion.div
@@ -56,7 +56,7 @@ export function PortfolioSection() {
                            
                             <h2 id="portfolio-heading" className="text-5xl md:text-7xl font-black leading-tight text-glow-white">
                                 {isAr ? 'مشاريع ' : 'Projects '}
-                                <span className="block bg-gradient-to-r from-primary via-yellow-300 to-orange-500 bg-clip-text text-transparent">
+                                <span className="block text-primary">
                                     {isAr ? 'تُلهم العالم' : 'That Inspire'}
                                 </span>
                             </h2>
@@ -65,7 +65,7 @@ export function PortfolioSection() {
                             <Button
                                 variant="outline"
                                 size="lg"
-                                className="group rounded-2xl border-white/10 bg-white/[0.03] px-8 py-6 font-semibold text-white hover:border-primary/30 hover:bg-white/[0.06] transition-all duration-300 hover:scale-[1.02]"
+                                className="group rounded-2xl border-primary/40 bg-primary/10 px-8 py-6 font-semibold text-primary hover:border-primary hover:bg-primary hover:text-background transition-all duration-300 hover:scale-[1.02]"
                             >
                                 {isAr ? 'كل الأعمال' : 'View All Projects'}
                                 {isAr

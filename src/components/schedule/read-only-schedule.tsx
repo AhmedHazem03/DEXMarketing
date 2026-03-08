@@ -27,6 +27,15 @@ import {
     Briefcase,
     Filter,
     X,
+    FolderOpen,
+    ListTodo,
+    AlertTriangle,
+    ShieldCheck,
+    Link2,
+    ImageIcon,
+    MessageSquare,
+    CheckCircle2,
+    XCircle,
 } from 'lucide-react'
 
 import { cn, formatTime12h } from '@/lib/utils'
@@ -34,6 +43,11 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
+
+function isVideoUrl(url: string) {
+    return /\.(mp4|webm|mov|avi|mkv|ogv)(\?.*)?$/i.test(url)
+}
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -60,6 +74,7 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
     const [currentDate, setCurrentDate] = useState(new Date())
     const [selectedDate, setSelectedDate] = useState<Date | null>(null)
     const [clientFilter, setClientFilter] = useState<string>('all')
+    const [lightbox, setLightbox] = useState<{ url: string; type: 'image' | 'video'; list: string[]; index: number } | null>(null)
 
     const year = currentDate.getFullYear()
     const month = currentDate.getMonth() + 1
@@ -294,146 +309,382 @@ export function ReadOnlyScheduleView({ userId, clientId, teamLeaderId, title }: 
 
             {/* Selected Day Details */}
             {selectedDate && selectedSchedules.length > 0 && (
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="text-base sm:text-lg">
+                <div className="space-y-3">
+                    {/* Day header */}
+                    <div className="flex items-center gap-2 px-1">
+                        <CalendarIcon className="h-4 w-4 text-primary" />
+                        <h3 className="text-sm font-semibold text-foreground">
                             {format(selectedDate, 'PPP', { locale: dateLocale })}
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ScrollArea className="h-[300px] sm:h-[400px]">
-                            <div className="space-y-3">
-                                {selectedSchedules.map((schedule) => {
-                                    const overdue = isScheduleOverdue(schedule)
-                                    const statusCfg = overdue ? OVERDUE_CONFIG : getScheduleStatusConfig(schedule.status)
-                                    const members = (schedule.assigned_members || [])
-                                        .map(id => memberMap.get(id))
-                                        .filter(Boolean) as Pick<User, 'id' | 'name' | 'avatar_url' | 'role'>[]
+                        </h3>
+                        <Badge variant="secondary" className="ms-auto text-xs">
+                            {selectedSchedules.length} {isAr ? 'عنصر' : 'item(s)'}
+                        </Badge>
+                    </div>
 
-                                    return (
-                                        <div
-                                            key={schedule.id}
-                                            className={cn(
-                                                'flex items-start gap-3 p-3 border rounded-lg',
-                                                overdue && 'border-red-300 dark:border-red-800 bg-red-50/50 dark:bg-red-950/20',
-                                                schedule.status === 'completed' && 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/30 dark:bg-emerald-950/10'
-                                            )}
-                                        >
-                                            <div
-                                                className={cn(
-                                                    'w-1 h-full min-h-[40px] rounded-full shrink-0',
-                                                    overdue
-                                                        ? 'bg-red-500'
-                                                        : schedule.status === 'completed'
-                                                            ? 'bg-emerald-500'
-                                                            : schedule.status === 'in_progress'
-                                                                ? 'bg-amber-500'
-                                                                : 'bg-blue-500'
-                                                )}
-                                            />
-                                            <div className="flex-1 min-w-0 space-y-2">
-                                                <div className="flex items-start justify-between gap-2">
-                                                    <div className="flex-1">
-                                                        <h4 className="font-medium text-sm mb-1.5">{schedule.title}</h4>
+                    <ScrollArea className="h-[420px] sm:h-[520px] pe-1">
+                        <div className="space-y-3 pb-2">
+                            {selectedSchedules.map((schedule) => {
+                                const overdue = isScheduleOverdue(schedule)
+                                const statusCfg = overdue ? OVERDUE_CONFIG : getScheduleStatusConfig(schedule.status)
+                                const members = (schedule.assigned_members || [])
+                                    .map(id => memberMap.get(id))
+                                    .filter(Boolean) as Pick<User, 'id' | 'name' | 'avatar_url' | 'role'>[]
+
+                                // Accent color based on status
+                                const accentColor = overdue
+                                    ? 'bg-red-500'
+                                    : schedule.status === 'completed'
+                                        ? 'bg-emerald-500'
+                                        : schedule.status === 'in_progress'
+                                            ? 'bg-amber-500'
+                                            : schedule.status === 'cancelled'
+                                                ? 'bg-slate-400'
+                                                : 'bg-blue-500'
+
+                                const cardBg = overdue
+                                    ? 'border-red-200 dark:border-red-900 bg-red-50/40 dark:bg-red-950/15'
+                                    : schedule.status === 'completed'
+                                        ? 'border-emerald-200 dark:border-emerald-900 bg-emerald-50/30 dark:bg-emerald-950/10'
+                                        : schedule.status === 'in_progress'
+                                            ? 'border-amber-200 dark:border-amber-900 bg-amber-50/30 dark:bg-amber-950/10'
+                                            : 'border-border bg-card hover:bg-muted/30'
+
+                                return (
+                                    <div
+                                        key={schedule.id}
+                                        className={cn(
+                                            'rounded-xl border shadow-sm overflow-hidden transition-colors',
+                                            cardBg
+                                        )}
+                                    >
+                                        {/* Colored top bar */}
+                                        <div className={cn('h-1 w-full', accentColor)} />
+
+                                        <div className="p-4 space-y-3">
+                                            {/* ── Title row ── */}
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-semibold text-base leading-tight mb-1.5 text-foreground">
+                                                        {schedule.title}
+                                                    </h4>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {/* Status badge */}
+                                                        <span className={cn(
+                                                            'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold',
+                                                            overdue
+                                                                ? 'bg-red-100 text-red-700 dark:bg-red-950/40 dark:text-red-400'
+                                                                : schedule.status === 'completed'
+                                                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400'
+                                                                    : schedule.status === 'in_progress'
+                                                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400'
+                                                                        : schedule.status === 'cancelled'
+                                                                            ? 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
+                                                                            : 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400'
+                                                        )}>
+                                                            <span className={cn('w-1.5 h-1.5 rounded-full', accentColor)} />
+                                                            {overdue
+                                                                ? (isAr ? 'متأخر' : 'Overdue')
+                                                                : (isAr ? statusCfg.labelAr : statusCfg.label)}
+                                                        </span>
+                                                        {/* Department */}
                                                         {schedule.department && (
-                                                            <Badge variant="secondary" className="text-xs gap-1.5">
-                                                                <Briefcase className="h-3 w-3" />
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-purple-100 text-purple-700 dark:bg-purple-950/40 dark:text-purple-400">
+                                                                <Briefcase className="h-2.5 w-2.5" />
                                                                 {isAr
-                                                                    ? schedule.department === 'photography'
-                                                                        ? 'التصوير'
-                                                                        : schedule.department === 'content'
-                                                                            ? 'المحتوى'
-                                                                            : schedule.department
-                                                                    : schedule.department === 'photography'
-                                                                        ? 'Photography'
-                                                                        : schedule.department === 'content'
-                                                                            ? 'Content'
-                                                                            : schedule.department}
-                                                            </Badge>
+                                                                    ? schedule.department === 'photography' ? 'التصوير'
+                                                                        : schedule.department === 'content' ? 'المحتوى'
+                                                                            : schedule.department === 'design' ? 'التصميم'
+                                                                                : schedule.department === 'video' ? 'الفيديو'
+                                                                                    : schedule.department
+                                                                    : schedule.department.charAt(0).toUpperCase() + schedule.department.slice(1)}
+                                                            </span>
+                                                        )}
+                                                        {/* Type */}
+                                                        {schedule.schedule_type && (
+                                                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-sky-100 text-sky-700 dark:bg-sky-950/40 dark:text-sky-400">
+                                                                {schedule.schedule_type === 'reels' ? '📹' : '📝'}
+                                                                {schedule.schedule_type === 'reels' ? (isAr ? 'ريلز' : 'Reels') : (isAr ? 'بوست' : 'Post')}
+                                                            </span>
+                                                        )}
+                                                        {/* Approval */}
+                                                        {schedule.approval_status && schedule.approval_status !== 'pending' && (
+                                                            <span className={cn(
+                                                                'inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold',
+                                                                schedule.approval_status === 'approved'
+                                                                    ? 'bg-teal-100 text-teal-700 dark:bg-teal-950/40 dark:text-teal-400'
+                                                                    : 'bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-400'
+                                                            )}>
+                                                                {schedule.approval_status === 'approved'
+                                                                    ? <CheckCircle2 className="h-2.5 w-2.5" />
+                                                                    : <XCircle className="h-2.5 w-2.5" />}
+                                                                {isAr
+                                                                    ? schedule.approval_status === 'approved' ? 'معتمد' : 'مرفوض'
+                                                                    : schedule.approval_status === 'approved' ? 'Approved' : 'Rejected'}
+                                                            </span>
                                                         )}
                                                     </div>
-                                                    <Badge
-                                                        variant="outline"
-                                                        className={cn(
-                                                            'shrink-0 text-xs',
-                                                            overdue && 'border-red-300 text-red-600 bg-red-50 dark:bg-red-950/30',
-                                                            schedule.status === 'completed' && 'border-emerald-300 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30'
-                                                        )}
-                                                    >
-                                                        {overdue
-                                                            ? (isAr ? 'متأخر' : 'Overdue')
-                                                            : (isAr ? statusCfg.labelAr : statusCfg.label)}
-                                                    </Badge>
                                                 </div>
+                                            </div>
 
-                                                {schedule.schedule_type && (
-                                                    <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                                                        <span>{schedule.schedule_type === 'reels' ? '📹' : '📝'}</span>
-                                                        <span>{schedule.schedule_type === 'reels' ? (isAr ? 'ريلز' : 'Reels') : (isAr ? 'بوست' : 'Post')}</span>
-                                                    </div>
-                                                )}
-
-                                                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                                            {/* ── Meta chips row ── */}
+                                            {(schedule.start_time || schedule.location || schedule.client || schedule.company_name || schedule.project || schedule.task) && (
+                                                <div className="flex flex-wrap gap-2">
                                                     {schedule.start_time && (
-                                                        <span className="flex items-center gap-1">
-                                                            <Clock className="h-3 w-3" />
-                                                            {formatTime12h(schedule.start_time)}
-                                                            {schedule.end_time && ` - ${formatTime12h(schedule.end_time)}`}
-                                                        </span>
-                                                    )}
-                                                    {schedule.location && (
-                                                        <span className="flex items-center gap-1">
-                                                            <MapPin className="h-3 w-3" />
-                                                            {schedule.location}
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <Clock className="h-3 w-3 text-primary shrink-0" />
+                                                            <span className="font-medium">{formatTime12h(schedule.start_time)}</span>
+                                                            {schedule.end_time && <span className="text-muted-foreground">→ {formatTime12h(schedule.end_time)}</span>}
+                                                        </div>
                                                     )}
                                                     {schedule.client && (
-                                                        <span className="flex items-center gap-1">
-                                                            <Building2 className="h-3 w-3" />
-                                                            {schedule.client.name}
-                                                        </span>
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <Building2 className="h-3 w-3 text-indigo-500 shrink-0" />
+                                                            <span className="font-medium">{schedule.client.name}</span>
+                                                        </div>
+                                                    )}
+                                                    {schedule.company_name && schedule.company_name !== schedule.client?.name && (
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <Building2 className="h-3 w-3 text-violet-500 shrink-0" />
+                                                            <span className="font-medium">{schedule.company_name}</span>
+                                                        </div>
+                                                    )}
+                                                    {schedule.location && (
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
+                                                            <span>{schedule.location}</span>
+                                                        </div>
+                                                    )}
+                                                    {schedule.project && (
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <FolderOpen className="h-3 w-3 text-orange-500 shrink-0" />
+                                                            <span>{schedule.project.name}</span>
+                                                        </div>
+                                                    )}
+                                                    {schedule.task && (
+                                                        <div className="flex items-center gap-1.5 text-xs bg-muted/60 rounded-md px-2 py-1 text-foreground">
+                                                            <ListTodo className="h-3 w-3 text-cyan-500 shrink-0" />
+                                                            <span>{schedule.task.title}</span>
+                                                        </div>
                                                     )}
                                                 </div>
+                                            )}
 
-                                                {/* Assigned Members */}
-                                                {members.length > 0 && (
-                                                    <div className="flex items-center gap-2">
-                                                        <Users className="h-3 w-3 text-muted-foreground" />
-                                                        <div className="flex -space-x-1.5 rtl:space-x-reverse">
-                                                            {members.slice(0, 5).map(m => (
-                                                                <Avatar key={m.id} className="h-5 w-5 border-2 border-background">
-                                                                    <AvatarImage src={m.avatar_url || ''} />
-                                                                    <AvatarFallback className="text-[9px] bg-primary/10">
-                                                                        {m.name?.charAt(0) || '?'}
-                                                                    </AvatarFallback>
-                                                                </Avatar>
-                                                            ))}
-                                                        </div>
-                                                        <span className="text-xs text-muted-foreground">
-                                                            {members.map(m => m.name?.split(' ')[0]).join(', ')}
-                                                        </span>
+                                            {/* ── Assigned Members ── */}
+                                            {members.length > 0 && (
+                                                <div className="flex items-center gap-2 flex-wrap">
+                                                    <Users className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+                                                    <div className="flex -space-x-2 rtl:space-x-reverse">
+                                                        {members.slice(0, 6).map(m => (
+                                                            <Avatar key={m.id} className="h-6 w-6 border-2 border-background ring-1 ring-muted">
+                                                                <AvatarImage src={m.avatar_url || ''} />
+                                                                <AvatarFallback className="text-[9px] bg-primary/20 font-bold text-primary">
+                                                                    {m.name?.charAt(0) || '?'}
+                                                                </AvatarFallback>
+                                                            </Avatar>
+                                                        ))}
                                                     </div>
-                                                )}
+                                                    <span className="text-xs text-muted-foreground">
+                                                        {members.map(m => m.name?.split(' ')[0]).join('، ')}
+                                                    </span>
+                                                </div>
+                                            )}
 
-                                                {schedule.description && (
-                                                    <p className="text-xs text-muted-foreground">
-                                                        {schedule.description}
-                                                    </p>
-                                                )}
+                                            {/* ── Description ── */}
+                                            {schedule.description && (
+                                                <p className="text-sm text-muted-foreground leading-relaxed">
+                                                    {schedule.description}
+                                                </p>
+                                            )}
 
-                                                {schedule.notes && (
-                                                    <p className="text-xs text-muted-foreground italic">
-                                                        {schedule.notes}
+                                            {/* ── Notes ── */}
+                                            {schedule.notes && (
+                                                <div className="flex gap-2 bg-muted/40 rounded-lg px-3 py-2">
+                                                    <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
+                                                    <p className="text-xs text-muted-foreground italic leading-relaxed">{schedule.notes}</p>
+                                                </div>
+                                            )}
+
+                                            {/* ── Manager Notes ── */}
+                                            {schedule.manager_notes && (
+                                                <div className="flex gap-2 bg-primary/5 border border-primary/15 rounded-lg px-3 py-2">
+                                                    <MessageSquare className="h-3.5 w-3.5 shrink-0 mt-0.5 text-primary" />
+                                                    <div className="min-w-0">
+                                                        <p className="text-[11px] font-semibold text-primary mb-0.5">{isAr ? 'ملاحظة المدير' : 'Manager Note'}</p>
+                                                        <p className="text-xs text-foreground/80 leading-relaxed">{schedule.manager_notes}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* ── Missing Items ── */}
+                                            {schedule.missing_items && (
+                                                <div className={cn(
+                                                    'flex gap-2 rounded-lg px-3 py-2 border',
+                                                    schedule.missing_items_status === 'resolved'
+                                                        ? 'bg-emerald-50 border-emerald-200 dark:bg-emerald-950/20 dark:border-emerald-900'
+                                                        : 'bg-amber-50 border-amber-200 dark:bg-amber-950/20 dark:border-amber-900'
+                                                )}>
+                                                    <AlertTriangle className={cn(
+                                                        'h-3.5 w-3.5 shrink-0 mt-0.5',
+                                                        schedule.missing_items_status === 'resolved' ? 'text-emerald-500' : 'text-amber-500'
+                                                    )} />
+                                                    <div className="min-w-0">
+                                                        <p className={cn(
+                                                            'text-[11px] font-semibold mb-0.5',
+                                                            schedule.missing_items_status === 'resolved'
+                                                                ? 'text-emerald-700 dark:text-emerald-400'
+                                                                : 'text-amber-700 dark:text-amber-400'
+                                                        )}>
+                                                            {isAr ? 'عناصر ناقصة' : 'Missing Items'}
+                                                            {schedule.missing_items_status === 'resolved' && (
+                                                                <span className="ms-1.5 font-normal opacity-80">{isAr ? '· تم الحل ✓' : '· Resolved ✓'}</span>
+                                                            )}
+                                                        </p>
+                                                        <p className="text-xs text-foreground/70 leading-relaxed">{schedule.missing_items}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* ── Links ── */}
+                                            {schedule.links && schedule.links.length > 0 && (
+                                                <div className="space-y-1.5">
+                                                    <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                                                        <Link2 className="h-3 w-3" />
+                                                        {isAr ? 'روابط' : 'Links'}
                                                     </p>
-                                                )}
-                                            </div>
+                                                    <div className="space-y-1.5">
+                                                        {schedule.links.map((link, i) => (
+                                                            <a
+                                                                key={i}
+                                                                href={link.url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="flex items-start gap-2 group rounded-lg border bg-muted/40 hover:bg-primary/5 hover:border-primary/30 px-3 py-2 transition-colors"
+                                                            >
+                                                                <Link2 className="h-3 w-3 mt-0.5 shrink-0 text-primary" />
+                                                                <div className="min-w-0">
+                                                                    <p className="text-xs text-primary group-hover:underline truncate">{link.url}</p>
+                                                                    {link.comment && (
+                                                                        <p className="text-[10px] text-muted-foreground mt-0.5">{link.comment}</p>
+                                                                    )}
+                                                                </div>
+                                                            </a>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* ── Images & Videos ── */}
+                                            {schedule.images && schedule.images.length > 0 && (() => {
+                                                const mediaList = schedule.images
+                                                const images = mediaList.filter(u => !isVideoUrl(u))
+                                                const videos = mediaList.filter(u => isVideoUrl(u))
+                                                return (
+                                                    <div className="space-y-3">
+                                                        {images.length > 0 && (
+                                                            <div className="space-y-2">
+                                                                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                                                                    <ImageIcon className="h-3 w-3" />
+                                                                    {isAr ? 'صور' : 'Images'} ({images.length})
+                                                                </p>
+                                                                <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                                                    {images.map((img, i) => (
+                                                                        <button
+                                                                            key={i}
+                                                                            onClick={() => setLightbox({ url: img, type: 'image', list: images, index: i })}
+                                                                            className="group relative aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary bg-muted shadow-sm transition-all hover:shadow-md"
+                                                                        >
+                                                                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                                                                            <img
+                                                                                src={img}
+                                                                                alt={`${isAr ? 'صورة' : 'Image'} ${i + 1}`}
+                                                                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                                                            />
+                                                                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                                                                <ImageIcon className="h-4 w-4 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                                                            </div>
+                                                                        </button>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                        {videos.length > 0 && (
+                                                            <div className="space-y-2">
+                                                                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                                                                    🎬 {isAr ? 'فيديوهات' : 'Videos'} ({videos.length})
+                                                                </p>
+                                                                <div className="space-y-2">
+                                                                    {videos.map((vid, i) => (
+                                                                        <div key={i} className="rounded-xl overflow-hidden border bg-black shadow-sm">
+                                                                            {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
+                                                                            <video
+                                                                                src={vid}
+                                                                                controls
+                                                                                preload="metadata"
+                                                                                className="w-full max-h-[280px] object-contain"
+                                                                            />
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )
+                                            })()}
                                         </div>
-                                    )
-                                })}
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    </ScrollArea>
+                </div>
+            )}
+
+            {/* Lightbox Dialog */}
+            {lightbox && (
+                <Dialog open onOpenChange={() => setLightbox(null)}>
+                    <DialogContent className="max-w-3xl p-2 bg-black/95 border-none">
+                        <DialogTitle className="sr-only">{isAr ? 'معاينة الصورة' : 'Image preview'}</DialogTitle>
+                        <div className="relative flex items-center justify-center min-h-[300px]">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={lightbox.url}
+                                alt={isAr ? 'معاينة' : 'Preview'}
+                                className="max-h-[80vh] max-w-full rounded object-contain"
+                            />
+                        </div>
+                        {lightbox.list.length > 1 && (
+                            <div className="flex items-center justify-center gap-3 pt-1">
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-white hover:bg-white/10"
+                                    disabled={lightbox.index === 0}
+                                    onClick={() => {
+                                        const prev = lightbox.index - 1
+                                        setLightbox({ ...lightbox, url: lightbox.list[prev], index: prev })
+                                    }}
+                                >
+                                    <ChevronLeft className="h-4 w-4" />
+                                </Button>
+                                <span className="text-xs text-white/60">
+                                    {lightbox.index + 1} / {lightbox.list.length}
+                                </span>
+                                <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="text-white hover:bg-white/10"
+                                    disabled={lightbox.index === lightbox.list.length - 1}
+                                    onClick={() => {
+                                        const next = lightbox.index + 1
+                                        setLightbox({ ...lightbox, url: lightbox.list[next], index: next })
+                                    }}
+                                >
+                                    <ChevronRight className="h-4 w-4" />
+                                </Button>
                             </div>
-                        </ScrollArea>
-                    </CardContent>
-                </Card>
+                        )}
+                    </DialogContent>
+                </Dialog>
             )}
 
             {!isLoading && schedules?.length === 0 && (

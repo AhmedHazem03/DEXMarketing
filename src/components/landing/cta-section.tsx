@@ -19,7 +19,7 @@ export function CTASection() {
     const email = settings.contact_email || 'info@dex-advertising.com'
 
     return (
-        <section id="cta" className="relative overflow-hidden py-48">
+        <section id="cta" className="relative overflow-hidden py-28 md:py-32">
             {/* Background effects */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="section-divider absolute top-0 left-0 right-0" />
@@ -101,7 +101,7 @@ export function CTASection() {
                             {/* Heading */}
                             <h2 className="mb-8 text-4xl font-black md:text-6xl lg:text-7xl leading-tight text-glow-white">
                                 {isAr ? 'جاهز ' : 'Ready to '}
-                                <span className="bg-gradient-to-r from-primary via-yellow-300 to-orange-500 bg-clip-text text-transparent">
+                                <span className="text-primary">
                                     {isAr ? 'تنطلق؟' : 'Launch?'}
                                 </span>
                             </h2>
@@ -117,20 +117,13 @@ export function CTASection() {
                                 <Link href="/register">
                                     <Button
                                         size="lg"
-                                        className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-yellow-400 to-orange-500 px-14 py-8 text-xl font-bold text-background shadow-[0_0_40px_rgba(251,191,36,0.25),0_0_80px_rgba(251,191,36,0.1)] transition-all duration-500 hover:shadow-[0_0_60px_rgba(251,191,36,0.4),0_0_100px_rgba(251,191,36,0.15)] hover:brightness-110 hover:scale-[1.03]"
+                                        className="group relative overflow-hidden rounded-2xl bg-primary px-14 py-8 text-xl font-bold text-background shadow-[0_0_40px_rgba(251,191,36,0.22),0_0_80px_rgba(251,191,36,0.08)] transition-all duration-500 hover:bg-primary/90 hover:shadow-[0_0_60px_rgba(251,191,36,0.32),0_0_100px_rgba(251,191,36,0.12)] hover:scale-[1.03]"
                                     >
                                         <span className="relative z-10 flex items-center gap-3">
                                             <Rocket className="h-6 w-6 transition-transform group-hover:-translate-y-1 group-hover:rotate-12" />
                                             {isAr ? 'احجز استشارتك المجانية' : 'Book Free Consultation'}
                                             <Arrow className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                                         </span>
-                                        {!prefersReducedMotion && (
-                                            <motion.div
-                                                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent"
-                                                animate={{ x: ['120%', '-120%'] }}
-                                                transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 4 }}
-                                            />
-                                        )}
                                     </Button>
                                 </Link>
                             </div>

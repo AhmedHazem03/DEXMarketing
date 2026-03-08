@@ -41,6 +41,7 @@ export interface ScheduleCardProps {
 
 export function ScheduleCard({ schedule, isAr, memberMap, onEdit, onDelete, onStatusChange, isAccountManager, onApproval }: ScheduleCardProps) {
     const overdue = isScheduleOverdue(schedule)
+    const hasMissingItems = !!(schedule.missing_items?.trim()) && schedule.missing_items_status !== 'resolved'
     const statusCfg = overdue ? OVERDUE_CONFIG : getScheduleStatusConfig(schedule.status)
     const [showRejectInput, setShowRejectInput] = useState(false)
     const [rejectNote, setRejectNote] = useState('')
@@ -61,14 +62,15 @@ export function ScheduleCard({ schedule, isAr, memberMap, onEdit, onDelete, onSt
     return (
         <div className={cn(
             'group relative rounded-xl glass-dashboard p-4 transition-all duration-300 hover:translate-y-[-1px]',
-            getCardBorderClass(schedule.status, overdue),
+            getCardBorderClass(schedule.status, overdue, hasMissingItems),
             overdue && '!border-red-500/40 shadow-[0_0_12px_rgba(239,68,68,0.1)]',
             schedule.status === 'completed' && '!border-emerald-500/30 shadow-[0_0_12px_rgba(16,185,129,0.08)]',
+            hasMissingItems && !overdue && schedule.status !== 'completed' && 'shadow-[0_0_12px_rgba(249,115,22,0.1)]',
         )}>
             {/* Status accent line */}
             <div className={cn(
                 'absolute top-0 start-0 w-1 h-full rounded-s-xl',
-                getStatusDot(schedule.status, overdue)
+                getStatusDot(schedule.status, overdue, hasMissingItems)
             )} />
 
             <div className="ps-3">

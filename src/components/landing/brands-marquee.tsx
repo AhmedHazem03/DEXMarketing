@@ -26,12 +26,12 @@ export function BrandsMarquee() {
     const doubled = [...BRANDS, ...BRANDS]
 
     return (
-        <section className="relative overflow-hidden py-20 bg-[#022026]">
+        <section className="relative overflow-hidden py-10 md:py-14 bg-[#022026]">
             {/* Top & bottom lines */}
             <div className="section-divider absolute top-0 left-0 right-0" />
             <div className="section-divider absolute bottom-0 left-0 right-0" />
 
-            <div className="container relative z-10 mx-auto px-6 mb-10">
+            <div className="container relative z-10 mx-auto px-6 mb-4">
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     whileInView={{ opacity: 1, y: 0 }}
