@@ -202,7 +202,7 @@ export function PartnersOrbit() {
             style={{
               display:            'flex',
               alignItems:         'flex-start',
-              animation:          'marquee-single 15s linear infinite',
+              animation:          'marquee-single 5s linear infinite',
               animationPlayState: isPaused ? 'paused' : 'running',
               willChange:         'transform',
             }}

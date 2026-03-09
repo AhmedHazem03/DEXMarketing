@@ -48,16 +48,7 @@ const FALLBACK_SERVICES: FallbackService[] = [
         accent: 'text-cyan-400',
         span: 'md:col-span-1 md:row-span-1',
     },
-    {
-        icon: TrendingUp,
-        titleAr: 'تحسين محركات البحث',
-        titleEn: 'SEO Domination',
-        descAr: 'استراتيجيات متقدمة للتصدر على جوجل',
-        descEn: 'Data-driven strategies to claim page one',
-        gradient: 'from-green-500/20 to-emerald-500/20',
-        accent: 'text-green-400',
-        span: 'md:col-span-1 md:row-span-1',
-    },
+    
     {
         icon: Camera,
         titleAr: 'التصوير الاحترافي',
@@ -123,7 +114,7 @@ export function ServicesSection() {
                     className="mb-24 text-center"
                 >
                      
-                    <h2 id="services-heading" className="mt-6 text-4xl font-black md:text-5xl lg:text-7xl text-glow-white">
+                    <h2 id="services-heading" className="mt-6 text-4xl font-black md:text-5xl lg:text-7xl font-serif text-glow-white">
                         {isAr ? 'كل ما تحتاجه ' : 'Everything You '}
                         <span className="text-primary">
                             {isAr ? 'للنجاح' : 'Need to Win'}

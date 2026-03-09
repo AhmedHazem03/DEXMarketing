@@ -83,9 +83,9 @@ export function HeroSection() {
             <StarField />
 
             {/* Hero Image */}
-            <div className="absolute inset-0 z-[5] pointer-events-none flex items-start justify-center lg:justify-end overflow-hidden pt-[5vh] lg:pt-0">
+            <div className="absolute inset-0 z-[5] pointer-events-none flex items-end lg:items-start justify-center lg:justify-end overflow-hidden lg:pt-0">
                 <div
-                    className={`relative w-full max-w-[400px] lg:max-w-[580px] h-[50vh] lg:h-[70vh] lg:translate-y-[35%] ${isAr ? 'lg:translate-x-[10%]' : 'lg:translate-x-[30%]'
+                    className={`relative w-full max-w-[240px] sm:max-w-[360px] lg:max-w-[580px] h-[40vh] sm:h-[48vh] lg:h-[70vh] lg:translate-y-[35%] ${isAr ? 'lg:translate-x-[10%]' : 'lg:translate-x-[30%]'
                         }`}
                 >
                     <div className="relative w-full h-full">

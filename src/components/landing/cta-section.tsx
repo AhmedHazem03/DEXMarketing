@@ -2,7 +2,7 @@
 
 import { motion, useReducedMotion } from 'framer-motion'
 import { useLocale } from 'next-intl'
-import { Rocket, ArrowLeft, ArrowRight, Phone, Mail, Zap } from 'lucide-react'
+import { Rocket, ArrowLeft, ArrowRight, Phone, Mail, Zap, Facebook, Instagram, Twitter } from 'lucide-react'
 import { Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { useSiteSettingsContext } from '@/components/providers/site-settings-provider'
@@ -17,6 +17,19 @@ export function CTASection() {
 
     const phone = settings.contact_phone || '+20 123 456 7890'
     const email = settings.contact_email || 'info@dex-advertising.com'
+
+    const TikTokIcon = () => (
+        <svg viewBox="0 0 24 24" className="h-4 w-4" fill="currentColor" aria-hidden="true">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.17 8.17 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+        </svg>
+    )
+
+    const socialLinks = [
+        { icon: <Facebook className="h-4 w-4" />, href: settings.social_facebook, label: 'Facebook' },
+        { icon: <Instagram className="h-4 w-4" />, href: settings.social_instagram, label: 'Instagram' },
+        { icon: <Twitter className="h-4 w-4" />, href: settings.social_twitter, label: 'Twitter / X' },
+        { icon: <TikTokIcon />, href: settings.social_tiktok, label: 'TikTok' },
+    ].filter(s => s.href)
 
     return (
         <section id="cta" className="relative overflow-hidden py-28 md:py-32">
@@ -114,7 +127,7 @@ export function CTASection() {
 
                             {/* CTA Buttons */}
                             <div className="mb-14 flex flex-col items-center justify-center gap-4 sm:flex-row">
-                                <Link href="/register">
+                                <Link href="https://wa.me/201553030051">
                                     <Button
                                         size="lg"
                                         className="group relative overflow-hidden rounded-2xl bg-primary px-14 py-8 text-xl font-bold text-background shadow-[0_0_40px_rgba(251,191,36,0.22),0_0_80px_rgba(251,191,36,0.08)] transition-all duration-500 hover:bg-primary/90 hover:shadow-[0_0_60px_rgba(251,191,36,0.32),0_0_100px_rgba(251,191,36,0.12)] hover:scale-[1.03]"
@@ -127,6 +140,25 @@ export function CTASection() {
                                     </Button>
                                 </Link>
                             </div>
+
+                            {/* Social Media Icons */}
+                            {socialLinks.length > 0 && (
+                                <div className="mb-10 flex items-center justify-center gap-3">
+                                    {socialLinks.map(({ icon, href, label }) => (
+                                        <motion.a
+                                            key={label}
+                                            href={href as string}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            aria-label={label}
+                                            className="flex h-11 w-11 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-white/40 transition-all duration-300 hover:border-primary/40 hover:bg-primary/[0.08] hover:text-primary hover:scale-110 hover:shadow-[0_0_20px_rgba(251,191,36,0.15)]"
+                                            whileHover={prefersReducedMotion ? undefined : { y: -2 }}
+                                        >
+                                            {icon}
+                                        </motion.a>
+                                    ))}
+                                </div>
+                            )}
 
                             {/* Contact badges */}
                             <div className="flex flex-wrap items-center justify-center gap-4 text-sm">

@@ -6,13 +6,15 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Save, Phone, Mail, MapPin, Globe, Loader2 } from 'lucide-react'
-import { useSiteSettings, useUpdateMultipleSiteSettings } from '@/hooks/use-cms'
+import { useSiteSettings } from '@/hooks/use-cms'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
+import { saveSiteSettingsAction } from '@/lib/actions/save-settings'
+import { useQueryClient } from '@tanstack/react-query'
 
 const CONTACT_KEYS = [
     'contact_phone', 'contact_email', 'contact_address_ar', 'contact_address_en',
-    'social_facebook', 'social_instagram', 'social_twitter', 'social_linkedin',
+    'social_facebook', 'social_instagram', 'social_twitter', 'social_tiktok',
 ] as const
 
 type ContactKey = typeof CONTACT_KEYS[number]
@@ -26,13 +28,15 @@ const EMPTY_SETTINGS: ContactSettingsData = {
     social_facebook: '',
     social_instagram: '',
     social_twitter: '',
-    social_linkedin: '',
+    social_tiktok: '',
 }
 
 export function ContactSettings() {
     const t = useTranslations('contactSettings')
     const { data: allSettings, isLoading } = useSiteSettings()
-    const updateSettings = useUpdateMultipleSiteSettings()
+    const queryClient = useQueryClient()
+
+    const [isSaving, setIsSaving] = useState(false)
 
     const [settings, setSettings] = useState<ContactSettingsData>(EMPTY_SETTINGS)
 
@@ -62,7 +66,7 @@ export function ContactSettings() {
             { key: 'social_facebook' as const, label: 'Facebook' },
             { key: 'social_instagram' as const, label: 'Instagram' },
             { key: 'social_twitter' as const, label: 'Twitter' },
-            { key: 'social_linkedin' as const, label: 'LinkedIn' },
+            { key: 'social_tiktok' as const, label: 'TikTok' },
         ]
         for (const { key, label } of socialFields) {
             if (settings[key] && !urlPattern.test(settings[key])) {
@@ -72,7 +76,11 @@ export function ContactSettings() {
         }
 
         try {
-            await updateSettings.mutateAsync(settings)
+            setIsSaving(true)
+            const result = await saveSiteSettingsAction(settings)
+            if (result.error) throw new Error(result.error)
+            // Refresh local React Query cache
+            queryClient.invalidateQueries({ queryKey: ['site-settings'] })
             toast.success(t('saveSuccess'))
         } catch (error) {
             const msg = error instanceof Error ? error.message : ''
@@ -82,6 +90,8 @@ export function ContactSettings() {
             } else {
                 toast.error(t('saveError'))
             }
+        } finally {
+            setIsSaving(false)
         }
     }
 
@@ -200,12 +210,12 @@ export function ContactSettings() {
                             />
                         </div>
                         <div className="space-y-2">
-                            <Label htmlFor="linkedin">LinkedIn</Label>
+                            <Label htmlFor="tiktok">TikTok</Label>
                             <Input
-                                id="linkedin"
-                                value={settings.social_linkedin}
-                                onChange={(e) => setSettings(prev => ({ ...prev, social_linkedin: e.target.value }))}
-                                placeholder="https://linkedin.com/company/..."
+                                id="tiktok"
+                                value={settings.social_tiktok}
+                                onChange={(e) => setSettings(prev => ({ ...prev, social_tiktok: e.target.value }))}
+                                placeholder="https://tiktok.com/@..."
                                 dir="ltr"
                             />
                         </div>
@@ -215,8 +225,8 @@ export function ContactSettings() {
 
             {/* زر الحفظ */}
             <div className="flex justify-end">
-                <Button onClick={saveSettings} disabled={updateSettings.isPending} size="lg">
-                    {updateSettings.isPending ? (
+                <Button onClick={saveSettings} disabled={isSaving} size="lg">
+                    {isSaving ? (
                         <Loader2 className="me-2 h-4 w-4 animate-spin" />
                     ) : (
                         <Save className="me-2 h-4 w-4" />

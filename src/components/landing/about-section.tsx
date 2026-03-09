@@ -3,6 +3,7 @@
 import { useRef, type MouseEvent as ReactMouseEvent } from 'react'
 import { motion, useInView, useMotionTemplate, useReducedMotion, useSpring } from 'framer-motion'
 import { useLocale } from 'next-intl'
+import Image from 'next/image'
 import { Target, Eye, Sparkles } from 'lucide-react'
 import { GlowOrb, FloatingHexagon, DotGrid } from './effects/floating-elements'
 import GlareHover from '../ui/GlareHover'
@@ -178,49 +179,31 @@ export function AboutSection() {
                     <div className="absolute inset-[12%] rounded-full border border-[#F2CB05]/16" />
                     <div className="absolute inset-[20%] rounded-full bg-[radial-gradient(circle,rgba(242,203,5,0.2),transparent_72%)] blur-md" />
 
-                    {/* D -> E -> X sequence replays each time visual re-enters viewport */}
-                    <div className="relative z-10 flex items-center gap-1 font-mono text-5xl font-black select-none">
-                      {shouldReduceMotion ? (
-                        <span className="text-[#F2CB05]/60 drop-shadow-[0_0_22px_rgba(242,203,5,0.24)]">DEX</span>
-                      ) : (
-                        <>
-                          <motion.span
-                            initial={{ opacity: 0, y: 14, scale: 0.84 }}
-                            animate={isVisualInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.84 }}
-                            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1], delay: 0.06 }}
-                            className="text-[#F2CB05]/65 drop-shadow-[0_0_20px_rgba(242,203,5,0.22)]"
-                          >
-                            X
-                          </motion.span>
-                          <motion.span
-                            initial={{ opacity: 0, y: 14, scale: 0.84 }}
-                            animate={isVisualInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.84 }}
-                            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                            className="text-[#F2CB05]/65 drop-shadow-[0_0_20px_rgba(242,203,5,0.22)]"
-                          >
-                            E
-                          </motion.span>
-                          <motion.span
-                            initial={{ opacity: 0, y: 14, scale: 0.84 }}
-                            animate={isVisualInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 14, scale: 0.84 }}
-                            transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1], delay: 0.54 }}
-                            className="text-[#F2CB05]/65 drop-shadow-[0_0_20px_rgba(242,203,5,0.22)]"
-                          >
-                            D
-                          </motion.span>
-                          <motion.div
-                            initial={{ opacity: 0, scale: 0.82 }}
-                            animate={
-                              isVisualInView
-                                ? { opacity: [0, 0.95, 0], scale: [0.82, 1.24, 1.62] }
-                                : { opacity: 0, scale: 0.82 }
-                            }
-                            transition={{ duration: 0.66, delay: 0.76, times: [0, 0.36, 1], ease: 'easeOut' }}
-                            className="pointer-events-none absolute inset-[-26%] rounded-full bg-[radial-gradient(circle,rgba(255,248,194,0.95)_0%,rgba(255,248,194,0.4)_35%,rgba(255,248,194,0)_74%)] mix-blend-screen"
-                          />
-                        </>
-                      )}
-                    </div>
+                    {/* Logo replays fade-in each time visual re-enters viewport */}
+                    <motion.div
+                      className="relative z-10 select-none"
+                      initial={{ opacity: 0, scale: 0.84 }}
+                      animate={isVisualInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.84 }}
+                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                    >
+                      <Image
+                        src="/images/DEX LOGO 2.png"
+                        alt="DEX Logo"
+                        width={100}
+                        height={100}
+                        className="object-contain drop-shadow-[0_0_20px_rgba(242,203,5,0.35)]"
+                      />
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.82 }}
+                        animate={
+                          isVisualInView
+                            ? { opacity: [0, 0.95, 0], scale: [0.82, 1.24, 1.62] }
+                            : { opacity: 0, scale: 0.82 }
+                        }
+                        transition={{ duration: 0.66, delay: 0.6, times: [0, 0.36, 1], ease: 'easeOut' }}
+                        className="pointer-events-none absolute inset-[-26%] rounded-full bg-[radial-gradient(circle,rgba(255,248,194,0.95)_0%,rgba(255,248,194,0.4)_35%,rgba(255,248,194,0)_74%)] mix-blend-screen"
+                      />
+                    </motion.div>
                   </motion.div>
                 </div>
 
