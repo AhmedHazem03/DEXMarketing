@@ -357,6 +357,28 @@
   will-change: transform;
 }
 
+@keyframes marquee-ticker {
+  from { transform: translateX(0%); }
+  to   { transform: translateX(-50%); }
+}
+
+.marquee-ticker-track {
+  display: flex;
+  align-items: flex-start;
+  animation: marquee-ticker 15s linear infinite;
+  will-change: transform;
+}
+
+.marquee-ticker-track.paused {
+  animation-play-state: paused;
+}
+
+@keyframes breathe-0 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+@keyframes breathe-1 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.035)} }
+@keyframes breathe-2 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.045)} }
+@keyframes breathe-3 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.03)} }
+@keyframes breathe-4 { 0%,100%{transform:scale(1)} 50%{transform:scale(1.04)} }
+
 /* ───── Decorative Shapes ───── */
 .hexagon {
   clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);

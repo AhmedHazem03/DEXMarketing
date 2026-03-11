@@ -13,10 +13,15 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'res.cloudinary.com',
-      },
+      // Cloudflare R2 public bucket URL (e.g. pub-xxxx.r2.dev or custom domain)
+      ...(process.env.NEXT_PUBLIC_R2_PUBLIC_URL
+        ? [
+            {
+              protocol: 'https' as const,
+              hostname: new URL(process.env.NEXT_PUBLIC_R2_PUBLIC_URL).hostname,
+            },
+          ]
+        : []),
     ],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

@@ -214,6 +214,7 @@ export function MediaUploader({
                             <button
                                 type="button"
                                 onClick={() => removeFile(i)}
+                                aria-label={isAr ? 'حذف الملف' : 'Remove file'}
                                 className="absolute top-1 end-1 bg-red-500 rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg z-10"
                             >
                                 <X className="size-3 text-white" />

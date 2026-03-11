@@ -4,28 +4,30 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useLocale } from 'next-intl'
 
+const GOLD = '#fbbf24'
+
 const PARTNERS = [
-  { name: 'Royal Brands',   abbr: 'RB', color: '#fbbf24' },
-  { name: 'TechVault',      abbr: 'TV', color: '#38bdf8' },
-  { name: 'Bella Fashion',  abbr: 'BF', color: '#ec4899' },
-  { name: 'Urban Fitness',  abbr: 'UF', color: '#4ade80' },
-  { name: 'EatFresh',       abbr: 'EF', color: '#f97316' },
-  { name: 'Nova Events',    abbr: 'NE', color: '#a78bfa' },
-  { name: 'Bloom Boutique', abbr: 'BB', color: '#fb7185' },
-  { name: 'Arabica Coffee', abbr: 'AC', color: '#d97706' },
-  { name: 'LuxeHome',       abbr: 'LH', color: '#34d399' },
-  { name: 'FitZone',        abbr: 'FZ', color: '#60a5fa' },
-  { name: 'Skyline Dev',    abbr: 'SD', color: '#c084fc' },
-  { name: 'Pulse Media',    abbr: 'PM', color: '#f43f5e' },
-  { name: 'GreenLeaf',      abbr: 'GL', color: '#86efac' },
-  { name: 'Nimbus Tech',    abbr: 'NT', color: '#67e8f9' },
-  { name: 'Aura Studio',    abbr: 'AS', color: '#fda4af' },
-  { name: 'ZenSpace',       abbr: 'ZS', color: '#d8b4fe' },
-  { name: 'BluePeak',       abbr: 'BP', color: '#93c5fd' },
-  { name: 'Ember Labs',     abbr: 'EL', color: '#fdba74' },
+  { name: 'الفانوس',           logo: '/first%2020/1.png',           color: GOLD },
+  { name: 'Inscription Dev',   logo: '/first%2020/2.png',           color: GOLD },
+  { name: 'CUBE Design',       logo: '/first%2020/3.png',           color: GOLD },
+  { name: 'بورسعيد',           logo: '/first%2020/4.png',           color: GOLD },
+  { name: 'نقابة المحامين',     logo: '/first%2020/5.png',           color: GOLD },
+  { name: 'Happy King',        logo: '/first%2020/6.png',           color: GOLD },
+  { name: 'Friends',           logo: '/first%2020/8.png',           color: GOLD },
+  { name: 'TM',                logo: '/first%2020/10.png',          color: GOLD },
+  { name: 'كبدة القلة',         logo: '/first%2020/11.png',          color: GOLD },
+  { name: "Let's Go",          logo: '/first%2020/12.png',          color: GOLD },
+  { name: 'طيارة',              logo: '/first%2020/13%20%282%29.png',   color: GOLD },
+  { name: 'مشارق',              logo: '/first%2020/14%20%282%29.png',   color: GOLD },
+  { name: 'No Name Fashion',   logo: '/first%2020/15%20%282%29.png',   color: GOLD },
+  { name: 'R Burger',          logo: '/first%2020/15.png',              color: GOLD },
+  { name: 'الأهرام تكنولوجي',   logo: '/first%2020/16%20%282%29.png',   color: GOLD },
+  { name: 'خلدون',              logo: '/first%2020/17%20%282%29.png',   color: GOLD },
+  { name: 'علوي',               logo: '/first%2020/18%20%283%29.png',   color: GOLD },
+  { name: 'Magic Square',      logo: '/first%2020/18.png',              color: GOLD },
 ]
 
-type Partner = { name: string; abbr: string; color: string }
+type Partner = { name: string; logo: string; color: string }
 
 function PartnerCard({
   partner,
@@ -81,51 +83,29 @@ function PartnerCard({
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
       >
-        {/* inner color ring */}
+        {/* logo image */}
         <div
-          className="absolute inset-[6px] rounded-full"
+          className="absolute inset-[3px] rounded-full flex items-center justify-center overflow-hidden"
           style={{
-            background: `radial-gradient(circle at 35% 35%, ${partner.color}22 0%, transparent 65%)`,
-            border:     `1px solid ${partner.color}${hovered ? '50' : '20'}`,
+            background: '#022026',
+            border:     `1px solid ${partner.color}${hovered ? '80' : '30'}`,
             transition: 'border-color 0.35s',
           }}
-        />
-
-        {/* abbr */}
-        <span
-          className="relative z-10 font-black tracking-widest"
-          style={{
-            fontSize:   '15px',
-            color:      hovered ? partner.color : `${partner.color}bb`,
-            textShadow: hovered ? `0 0 18px ${partner.color}` : 'none',
-            transition: 'color 0.3s, text-shadow 0.3s',
-            letterSpacing: '0.1em',
-          }}
         >
-          {partner.abbr}
-        </span>
-
-        {/* top dot */}
-        <span
-          className="absolute top-[10px] left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
-          style={{
-            background: partner.color,
-            boxShadow:  `0 0 6px ${partner.color}`,
-            opacity:    hovered ? 1 : 0.4,
-            transition: 'opacity 0.3s',
-          }}
-        />
+          <img
+            src={partner.logo}
+            alt={partner.name}
+            style={{
+              width:      '300%',
+              height:     '300%',
+              objectFit:  'contain',
+              display:    'block',
+              transition: 'transform 0.35s',
+              transform:  hovered ? 'scale(1.08)' : 'scale(1)',
+            }}
+          />
+        </div>
       </div>
-
-      {/* name label */}
-      <motion.span
-        className="text-[10px] font-semibold text-center whitespace-nowrap tracking-wide"
-        animate={{ opacity: hovered ? 1 : 0.3, y: hovered ? 0 : 2 }}
-        transition={{ duration: 0.25 }}
-        style={{ color: hovered ? partner.color : 'rgba(255,255,255,0.5)' }}
-      >
-        {partner.name}
-      </motion.span>
     </div>
   )
 }
@@ -135,28 +115,13 @@ export function PartnersOrbit() {
   const isAr    = locale === 'ar'
   const [isPaused, setIsPaused] = useState(false)
 
-  const items  = [...PARTNERS, ...PARTNERS, ...PARTNERS, ...PARTNERS]
-  const dir    = isAr ? 'right' : 'left'
-  const from   = dir === 'left' ? '0%'       : '-25%'
-  const to     = dir === 'left' ? '-25%' : '0%'
+  const items = [...PARTNERS, ...PARTNERS]
 
   return (
     <section
       dir={isAr ? 'rtl' : 'ltr'}
       className="relative overflow-hidden py-24 bg-[#022026]"
     >
-      <style>{`
-        @keyframes marquee-single {
-          from { transform: translateX(${from}); }
-          to   { transform: translateX(${to}); }
-        }
-        @keyframes breathe-0 { 0%,100%{transform:scale(1)}   50%{transform:scale(1.04)} }
-        @keyframes breathe-1 { 0%,100%{transform:scale(1)}   50%{transform:scale(1.035)} }
-        @keyframes breathe-2 { 0%,100%{transform:scale(1)}   50%{transform:scale(1.045)} }
-        @keyframes breathe-3 { 0%,100%{transform:scale(1)}   50%{transform:scale(1.03)} }
-        @keyframes breathe-4 { 0%,100%{transform:scale(1)}   50%{transform:scale(1.04)} }
-      `}</style>
-
       <div className="section-divider absolute top-0    left-0 right-0" />
       <div className="section-divider absolute bottom-0 left-0 right-0" />
 
@@ -197,16 +162,8 @@ export function PartnersOrbit() {
         <div className="pointer-events-none absolute inset-y-0 left-0  z-20 w-28 md:w-52 bg-gradient-to-r  from-[#022026] to-transparent" />
         <div className="pointer-events-none absolute inset-y-0 right-0 z-20 w-28 md:w-52 bg-gradient-to-l from-[#022026] to-transparent" />
 
-        <div className="overflow-hidden py-4">
-          <div
-            style={{
-              display:            'flex',
-              alignItems:         'flex-start',
-              animation:          'marquee-single 5s linear infinite',
-              animationPlayState: isPaused ? 'paused' : 'running',
-              willChange:         'transform',
-            }}
-          >
+        <div className="overflow-hidden py-4" dir="ltr">
+          <div className={`marquee-ticker-track${isPaused ? ' paused' : ''}`}>
             {items.map((p, i) => (
               <PartnerCard
                 key={`${p.name}-${i}`}

@@ -1,75 +1,55 @@
 // ============================================
-// Cloudinary Configuration - Single Source of Truth
+// Cloudflare R2 Upload — Single Source of Truth
 // ============================================
+// Uses a server-side API route (/api/upload/presign) to generate a
+// presigned PUT URL, then uploads the file directly from the browser
+// to R2.  The server validates auth + file type/size before signing.
 
-// Use lazy getters so missing env vars don't throw at module load time
-// (throwing at module level causes infinite error loops page-wide)
-export const CLOUDINARY_CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || ''
-export const CLOUDINARY_UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || ''
-export const CLOUDINARY_UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME || 'demo'}/auto/upload`
-
-/**
- * Maximum file size for images (10MB) and videos (200MB)
- */
-const MAX_IMAGE_SIZE = 10 * 1024 * 1024
-const MAX_VIDEO_SIZE = 200 * 1024 * 1024
+export const R2_PUBLIC_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || ''
 
 /**
- * Allowed MIME types for upload
- */
-const ALLOWED_MIME_TYPES = [
-    'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'image/avif',
-    'video/mp4', 'video/webm', 'video/quicktime',
-    'application/pdf',
-]
-
-/**
- * Upload a file to Cloudinary
- * @param file - The file to upload
- * @param folder - Optional folder name in Cloudinary
- * @returns The secure URL of the uploaded file
+ * Upload a file to Cloudflare R2.
+ * @param file   - The File object to upload.
+ * @param folder - Optional R2 key prefix (e.g. 'avatars', 'schedules').
+ * @returns      The public URL of the uploaded file.
  */
 export async function uploadToCloudinary(file: File, folder?: string): Promise<string> {
-    // Validate Cloudinary config at call-time (not module load time)
-    if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-        throw new Error('Cloudinary is not configured. Please set NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME and NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET.')
+    // 1. Request a presigned PUT URL from our API route
+    const res = await fetch('/api/upload/presign', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            fileName: file.name,
+            fileType: file.type,
+            fileSize: file.size,
+            folder,
+        }),
+    })
+
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        const message = (err as { error?: string }).error || 'Failed to get upload URL'
+        throw new Error(`فشل رفع الملف: ${message}`)
     }
 
-    // Validate file size (videos up to 200MB, images up to 10MB)
-    const isVideo = file.type.startsWith('video/')
-    const sizeLimit = isVideo ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE
-    if (file.size > sizeLimit) {
-        throw new Error(`File size exceeds ${sizeLimit / (1024 * 1024)}MB limit`)
+    const { presignedUrl, publicUrl } = await res.json() as {
+        presignedUrl: string
+        publicUrl: string
     }
 
-    // Validate file type
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
-        throw new Error(`File type "${file.type}" is not allowed`)
+    // 2. PUT the file directly to R2
+    const uploadRes = await fetch(presignedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type },
+        body: file,
+    })
+
+    if (!uploadRes.ok) {
+        throw new Error('فشل رفع الملف إلى R2')
     }
 
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-    
-    if (folder) {
-        formData.append('folder', folder)
-    }
-
-    try {
-        const response = await fetch(CLOUDINARY_UPLOAD_URL, {
-            method: 'POST',
-            body: formData,
-        })
-
-        if (!response.ok) {
-            throw new Error('Upload failed')
-        }
-
-        const data = await response.json()
-        return data.secure_url
-    } catch (error) {
-        console.error('Cloudinary upload error:', error)
-        const message = error instanceof Error ? error.message : 'Unknown error'
-        throw new Error(`فشل رفع الصورة: ${message}`)
-    }
+    return publicUrl
 }
+
+// ─── Alias for callers that import the old name ───────────────
+export const uploadFile = uploadToCloudinary

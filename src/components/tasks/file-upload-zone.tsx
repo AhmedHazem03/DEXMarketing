@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { useAddAttachment } from '@/hooks/use-tasks'
-import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_UPLOAD_URL } from '@/lib/cloudinary'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 import { getFileIcon, formatFileSize } from '@/lib/file-utils'
 
 // ============================================
@@ -165,15 +165,9 @@ export function FileUploadZone({
         return null
     }
 
-    // Upload single file to Cloudinary
-    const uploadToCloudinary = async (uploadFile: UploadedFile): Promise<void> => {
-        const formData = new FormData()
-        formData.append('file', uploadFile.file)
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-        formData.append('folder', folder || (taskId ? `dex-erp/tasks/${taskId}` : 'dex-erp/client-requests'))
-        if (taskId) {
-            formData.append('context', `task_id=${taskId}|uploaded_by=${userId}|uploaded_at=${Date.now()}`)
-        }
+    // Upload single file to R2
+    const uploadFile = async (uploadFile: UploadedFile): Promise<void> => {
+        const targetFolder = folder || (taskId ? `dex-erp/tasks/${taskId}` : 'dex-erp/client-requests')
 
         try {
             // Update status to uploading
@@ -181,17 +175,7 @@ export function FileUploadZone({
                 f.id === uploadFile.id ? { ...f, status: 'uploading' as const } : f
             ))
 
-            const response = await fetch(CLOUDINARY_UPLOAD_URL, {
-                method: 'POST',
-                body: formData,
-            })
-
-            if (!response.ok) {
-                throw new Error('Upload failed')
-            }
-
-            const data = await response.json()
-            const fileUrl = data.secure_url
+            const fileUrl = await uploadToCloudinary(uploadFile.file, targetFolder)
 
             // Only save to database if taskId is provided
             if (taskId) {
@@ -247,14 +231,14 @@ export function FileUploadZone({
 
         Array.from(fileList).forEach(file => {
             const error = validateFile(file)
-            const uploadFile: UploadedFile = {
+            const pendingFile: UploadedFile = {
                 id: generateId(),
                 file,
                 progress: 0,
                 status: error ? 'error' : 'pending',
                 error: error ?? undefined,
             }
-            newFiles.push(uploadFile)
+            newFiles.push(pendingFile)
         })
 
         setFiles(prev => [...prev, ...newFiles])
@@ -262,7 +246,7 @@ export function FileUploadZone({
         // Start uploading valid files
         newFiles
             .filter(f => f.status === 'pending')
-            .forEach(f => uploadToCloudinary(f))
+            .forEach(f => uploadFile(f))
     }, [taskId, userId])
 
     // Drag handlers
@@ -314,6 +298,7 @@ export function FileUploadZone({
                     multiple={multiple}
                     onChange={(e) => handleFiles(e.target.files)}
                     className="hidden"
+                    aria-label={isAr ? 'اختر ملفات للرفع' : 'Choose files to upload'}
                 />
 
                 <motion.div

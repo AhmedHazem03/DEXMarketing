@@ -5,7 +5,7 @@ import { useLocale } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Upload, X, Loader2, Image as ImageIcon, Video as VideoIcon } from 'lucide-react'
-import { CLOUDINARY_UPLOAD_PRESET, CLOUDINARY_UPLOAD_URL } from '@/lib/cloudinary'
+import { uploadToCloudinary } from '@/lib/cloudinary'
 
 // ─── Types ───────────────────────────────────────────────────
 
@@ -67,21 +67,9 @@ export function MediaUpload({
 
         setIsUploading(true)
 
-        const formData = new FormData()
-        formData.append('file', file)
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET)
-        formData.append('folder', folder)
-
         try {
-            const res = await fetch(CLOUDINARY_UPLOAD_URL, {
-                method: 'POST',
-                body: formData,
-            })
-
-            if (!res.ok) throw new Error('Upload failed')
-
-            const data = await res.json()
-            onChange(data.secure_url)
+            const url = await uploadToCloudinary(file, folder)
+            onChange(url)
         } catch {
             setError(isAr ? 'فشل الرفع، حاول مرة أخرى' : 'Upload failed, try again')
         } finally {
@@ -129,6 +117,7 @@ export function MediaUpload({
                 accept={acceptStr}
                 onChange={handleFileChange}
                 className="hidden"
+                aria-label={isAr ? 'اختر ملفاً للرفع' : 'Choose file to upload'}
             />
 
             {value ? (
