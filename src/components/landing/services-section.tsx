@@ -97,7 +97,7 @@ export function ServicesSection() {
     const hasCmsData = cmsItems && cmsItems.length > 0
 
     return (
-        <section id="services" className="relative overflow-hidden py-24 md:py-28" aria-labelledby="services-heading">
+        <section id="services" className="relative overflow-hidden pt-10 pb-24 md:pt-12 md:pb-28" aria-labelledby="services-heading">
             {/* Background decoration */}
             <div className="pointer-events-none absolute inset-0">
                 <div className="absolute left-1/2 top-0 h-[1px] w-[60%] -translate-x-1/2 bg-gradient-to-r from-transparent via-primary/30 to-transparent" />

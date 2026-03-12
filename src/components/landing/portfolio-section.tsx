@@ -41,7 +41,7 @@ export function PortfolioSection() {
     const hasCmsData = cmsItems && cmsItems.length > 0
 
     return (
-        <section id="portfolio" className="relative overflow-hidden bg-transparent py-24 md:py-28" aria-labelledby="portfolio-heading">
+        <section id="portfolio" className="relative overflow-hidden bg-transparent pt-24 pb-10 md:pt-28 md:pb-12" aria-labelledby="portfolio-heading">
             <div className="container relative z-10 mx-auto px-6">
                 {/* Header */}
                 <motion.div
