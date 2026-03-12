@@ -29,7 +29,7 @@ const PARTNERS = [
 
 type Partner = { name: string; logo: string; color: string }
 
-function InfiniteMarquee({ children, paused, speed = 45 }: { children: React.ReactNode; paused: boolean; speed?: number }) {
+function InfiniteMarquee({ children, paused, speed = 100 }: { children: React.ReactNode; paused: boolean; speed?: number }) {
   const trackRef = useRef<HTMLDivElement>(null)
   const x = useMotionValue(0)
 
@@ -121,6 +121,8 @@ function PartnerCard({
           <img
             src={partner.logo}
             alt={partner.name}
+            loading="lazy"
+            decoding="async"
             style={{
               width:      '100%',
               height:     '100%',

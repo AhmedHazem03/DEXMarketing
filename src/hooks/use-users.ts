@@ -146,17 +146,22 @@ export function useTeamMembers(teamLeaderId: string) {
         queryKey: [...TEAM_MEMBERS_KEY, teamLeaderId],
         enabled: !!teamLeaderId,
         queryFn: async () => {
-            // Get the team leader's department
+            // Get the team leader's department (and role as fallback)
             const { data: tl, error: tlError } = await supabase
                 .from('users')
-                .select('department')
+                .select('department, role')
                 .eq('id', teamLeaderId)
-                .single() as { data: { department: string | null } | null; error: unknown }
+                .single() as { data: { department: string | null; role: string | null } | null; error: unknown }
 
             if (tlError) throw tlError
-            if (!tl?.department) return []
 
-            const dept = tl.department as Department
+            // Derive department from role if not explicitly set in DB
+            let dept: Department | null = (tl?.department as Department) ?? null
+            if (!dept && tl?.role) {
+                if (tl.role === 'account_manager') dept = 'content'
+                else if (tl.role === 'team_leader') dept = 'photography'
+            }
+            if (!dept) return []
             const roles = DEPARTMENT_ROLES[dept] || []
 
             if (roles.length === 0) return []

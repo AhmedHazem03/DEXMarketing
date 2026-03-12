@@ -112,7 +112,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                                         {isAr ? 'الدخول' : 'Login'}
                                     </Button>
                                 </Link>
-                                <Link href="/register">
+                                <Link href="/contact">
                                     <Button className="rounded-xl bg-primary px-6 font-semibold text-background shadow-[0_0_20px_rgba(251,191,36,0.18)] transition-colors hover:bg-primary/90 hover:shadow-[0_0_30px_rgba(251,191,36,0.28)]">
                                         {isAr ? 'ابدأ الآن' : 'Get Started'}
                                     </Button>

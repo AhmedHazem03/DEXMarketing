@@ -2,6 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react'
 import { useLocale } from 'next-intl'
+import Image from 'next/image'
 import { HeroOverlay } from './effects/hero-overlay'
 import { HeroSectionMobile } from './hero-section-mobile'
 import { ChevronDown } from 'lucide-react'
@@ -91,10 +92,14 @@ function HeroSectionDesktop() {
                 >
                     <div className="relative w-full h-full">
                         {/* Full Detail Photorealistic Astronaut - STATIC */}
-                        <img
+                        <Image
                             src="/images/astronaut_hero.png"
                             alt={isAr ? 'رائد فضاء يمثل الإبداع والابتكار' : 'Astronaut representing creativity and innovation'}
-                            className="absolute inset-0 w-full h-full object-contain z-[12]"
+                            fill
+                            priority
+                            className="object-contain z-[12]"
+                            sizes="(max-width: 640px) 240px, (max-width: 1024px) 360px, 580px"
+                            quality={80}
                             style={{
                                 filter: 'brightness(1.1) contrast(1.1) saturate(1.05) drop-shadow(0 0 30px rgba(0,0,0,0.5))',
                                 transform: isAr ? 'scaleX(1)' : 'scaleX(-1)',

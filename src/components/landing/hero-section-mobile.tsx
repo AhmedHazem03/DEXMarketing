@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useLocale } from 'next-intl'
+import Image from 'next/image'
 import { ChevronDown } from 'lucide-react'
 import { HeroOverlayMobile } from './effects/hero-overlay-mobile'
 
@@ -76,12 +77,14 @@ export function HeroSectionMobile() {
 
             {/* ===== النصف العلوي: صورة الرائد الفضائي ===== */}
             <div className="relative z-[5] w-full flex-shrink-0" style={{ height: '50dvh' }}>
-                <img
+                <Image
                     src="/images/astronaut_hero.png"
                     alt={isAr ? 'رائد فضاء يمثل الإبداع والابتكار' : 'Astronaut representing creativity and innovation'}
-                    fetchPriority="high"
-                    loading="eager"
-                    className="w-full h-full object-contain object-bottom"
+                    fill
+                    priority
+                    className="object-contain object-bottom"
+                    sizes="100vw"
+                    quality={80}
                     style={{
                         filter: 'brightness(1.1) contrast(1.1) saturate(1.05) drop-shadow(0 0 40px rgba(0,0,0,0.6))',
                         transform: isAr ? 'scaleX(1)' : 'scaleX(-1)',

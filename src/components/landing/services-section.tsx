@@ -26,7 +26,7 @@ const FALLBACK_SERVICES: FallbackService[] = [
         descEn: 'Laser-targeted campaigns built for maximum ROI and explosive growth',
         gradient: 'from-red-500/20 to-orange-500/20',
         accent: 'text-red-400',
-        span: 'md:col-span-2 md:row-span-1',
+        span: 'md:col-span-1',
     },
     {
         icon: Palette,
@@ -67,7 +67,7 @@ const FALLBACK_SERVICES: FallbackService[] = [
         descEn: 'Words that convert browsers into loyal customers',
         gradient: 'from-indigo-500/20 to-violet-500/20',
         accent: 'text-indigo-400',
-        span: 'md:col-span-2 md:row-span-1',
+        span: 'md:col-span-1',
     },
 ]
 
@@ -81,7 +81,7 @@ const GRADIENT_COLORS = [
 ]
 
 const ACCENT_COLORS = ['text-red-400', 'text-purple-400', 'text-cyan-400', 'text-green-400', 'text-yellow-400', 'text-indigo-400']
-const SPANS = ['md:col-span-2 md:row-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-2']
+const SPANS = ['md:col-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-1', 'md:col-span-1']
 const ICONS: LucideIcon[] = [Megaphone, Palette, Video, TrendingUp, Camera, PenTool]
 
 export function ServicesSection() {
@@ -128,7 +128,7 @@ export function ServicesSection() {
                 </motion.div>
 
                 {/* Bento Grid */}
-                <div className="grid gap-5 md:grid-cols-3 md:auto-rows-[240px] lg:auto-rows-[260px]">
+                <div className="grid gap-5 md:grid-cols-2 md:auto-rows-[280px] lg:auto-rows-[300px]">
                     {hasCmsData
                         ? cmsItems.map((item, i) => (
                             <ServiceCard
