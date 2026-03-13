@@ -14,7 +14,8 @@ export function RoleSchedulePage({ title }: RoleSchedulePageProps) {
     const isAr = locale === 'ar'
     const { data: currentUser, isLoading } = useCurrentUser()
     const { data: leader, isLoading: leaderLoading } = useMyDepartmentLeader(
-        currentUser?.department ?? null
+        currentUser?.department ?? null,
+        currentUser?.role ?? null
     )
 
     if (isLoading || leaderLoading || !currentUser) {

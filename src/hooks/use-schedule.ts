@@ -41,7 +41,8 @@ export function useSchedules(filters: ScheduleFilters = {}) {
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
                     project:projects!schedules_project_id_fkey(id, name),
-                    task:tasks!schedules_task_id_fkey(id, title)
+                    task:tasks!schedules_task_id_fkey(id, title),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .order('scheduled_date', { ascending: true })
                 .order('start_time', { ascending: true })
@@ -92,7 +93,8 @@ export function useTodayAssignedSchedules(userId: string) {
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
                     project:projects!schedules_project_id_fkey(id, name),
-                    task:tasks!schedules_task_id_fkey(id, title)
+                    task:tasks!schedules_task_id_fkey(id, title),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('scheduled_date', today)
                 .contains('assigned_members', [userId])
@@ -123,7 +125,8 @@ export function useCalendarSchedules(teamLeaderId: string, year: number, month: 
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
                     project:projects!schedules_project_id_fkey(id, name),
-                    task:tasks!schedules_task_id_fkey(id, title)
+                    task:tasks!schedules_task_id_fkey(id, title),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('team_leader_id', teamLeaderId)
                 .gte('scheduled_date', startDate)
@@ -157,7 +160,8 @@ export function useMySchedules(userId: string, year: number, month: number) {
                     task:tasks!schedules_task_id_fkey!inner(id, title),
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
-                    project:projects!schedules_project_id_fkey(id, name)
+                    project:projects!schedules_project_id_fkey(id, name),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('tasks.assigned_to', userId)
                 .gte('scheduled_date', startDate)
@@ -189,7 +193,8 @@ export function useClientSchedules(clientId: string, year: number, month: number
                     *,
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
-                    project:projects!schedules_project_id_fkey(id, name)
+                    project:projects!schedules_project_id_fkey(id, name),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('client_id', clientId)
                 .gte('scheduled_date', startDate)
@@ -220,7 +225,8 @@ export function useScheduleDetail(id: string) {
                     *,
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
-                    project:projects!schedules_project_id_fkey(id, name)
+                    project:projects!schedules_project_id_fkey(id, name),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('id', id)
                 .single()
@@ -372,7 +378,8 @@ export function useContentSchedules(year: number, month: number) {
                     team_leader:users!schedules_team_leader_id_fkey(id, name, avatar_url),
                     client:clients!schedules_client_id_fkey(id, name),
                     project:projects!schedules_project_id_fkey(id, name),
-                    task:tasks!schedules_task_id_fkey(id, title)
+                    task:tasks!schedules_task_id_fkey(id, title),
+                    creator:users!schedules_created_by_fkey(id, name, avatar_url)
                 `)
                 .eq('department', 'content')
                 .gte('scheduled_date', startDate)

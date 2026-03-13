@@ -39,7 +39,7 @@ export function Header({ user, role, department }: { user?: any, role?: string, 
     }
 
     const navigateToProfile = () => {
-        router.push(`/${locale}/profile`)
+        router.push(`/profile`)
     }
 
     return (
@@ -78,12 +78,8 @@ export function Header({ user, role, department }: { user?: any, role?: string, 
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>{isAr ? 'حسابي' : 'My Account'}</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={navigateToAccount} className="cursor-pointer">
-                                <UserCircle className="me-2 h-4 w-4" />
-                                {isAr ? 'حسابي' : 'Account'}
-                            </DropdownMenuItem>
+                             
+                            
                             <DropdownMenuItem onClick={navigateToProfile} className="cursor-pointer">
                                 <User className="me-2 h-4 w-4" />
                                 {isAr ? 'الملف الشخصي' : 'Profile'}

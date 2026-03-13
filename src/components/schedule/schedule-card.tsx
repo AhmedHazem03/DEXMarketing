@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import {
     Clock, MapPin, Building2,
     Edit2, Trash2, CheckCircle2,
-    Users, AlertTriangle, X, Link2, FileText, Image as ImageIcon, PlayCircle
+    Users, AlertTriangle, X, Link2, FileText, Image as ImageIcon, PlayCircle, UserCheck
 } from 'lucide-react'
 
 import { cn, formatTime12h } from '@/lib/utils'
@@ -169,6 +169,17 @@ export function ScheduleCard({ schedule, isAr, memberMap, onEdit, onDelete, onSt
                     <div className="flex items-center gap-1 text-xs bg-primary/5 text-primary px-2 py-1 rounded-lg mt-1.5 w-fit max-w-full">
                         <Building2 className="h-3 w-3 shrink-0" />
                         <span className="truncate">{schedule.client?.name}</span>
+                    </div>
+                )}
+
+                {/* Creator chip */}
+                {schedule.creator && (
+                    <div className="flex items-center gap-1 text-xs bg-muted/40 text-muted-foreground px-2 py-1 rounded-lg mt-1.5 w-fit max-w-full">
+                        <UserCheck className="h-3 w-3 shrink-0" />
+                        <span className="text-[10px] font-medium opacity-70">
+                            {isAr ? 'جدولة بواسطة:' : 'Scheduled by:'}
+                        </span>
+                        <span className="truncate font-semibold">{schedule.creator.name}</span>
                     </div>
                 )}
 

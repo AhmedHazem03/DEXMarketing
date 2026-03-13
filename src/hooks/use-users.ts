@@ -14,6 +14,17 @@ const DEPARTMENT_ROLES: Record<Department, UserRole[]> = {
     content: ['creator', 'designer'],
 }
 
+// Infer department from role when DB column is null
+const ROLE_TO_DEPARTMENT: Partial<Record<UserRole, Department>> = {
+    creator: 'content',
+    designer: 'content',
+    account_manager: 'content',
+    photographer: 'photography',
+    videographer: 'photography',
+    editor: 'photography',
+    team_leader: 'photography',
+}
+
 /**
  * Hook to fetch the currently logged-in user's profile
  */
@@ -173,24 +184,36 @@ export function useTeamMembers(teamLeaderId: string) {
  * Hook to find the department leader for the current user.
  * For content dept members (creator/designer): finds their account_manager
  * For photography dept members (photographer/videographer/editor): finds their team_leader
+ * Accepts role as fallback to infer department when DB column is null.
  */
-export function useMyDepartmentLeader(department?: Department | null) {
+export function useMyDepartmentLeader(department?: Department | null, role?: UserRole | null) {
     const supabase = createClient()
 
-    const leaderRole = department === 'content' ? 'account_manager' : 'team_leader'
+    // Infer department from role when DB column is null
+    const effectiveDepartment: Department | null =
+        department ?? (role ? (ROLE_TO_DEPARTMENT[role] ?? null) : null)
+
+    const leaderRole = effectiveDepartment === 'content' ? 'account_manager' : 'team_leader'
+    const isAccountManager = leaderRole === 'account_manager'
 
     return useQuery({
-        queryKey: ['department-leader', department, leaderRole],
-        enabled: !!department,
+        queryKey: ['department-leader', effectiveDepartment, leaderRole],
+        enabled: !!effectiveDepartment,
         queryFn: async () => {
-            const { data, error } = await supabase
+            let query = supabase
                 .from('users')
                 .select('id, name, email, avatar_url, role, department')
                 .eq('role', leaderRole)
-                .eq('department', department!)
                 .eq('is_active', true)
-                .limit(1)
-                .maybeSingle()
+
+            if (isAccountManager) {
+                // account_managers may have department=null before backfill, match both
+                query = query.or(`department.eq.content,department.is.null`)
+            } else {
+                query = query.eq('department', effectiveDepartment!)
+            }
+
+            const { data, error } = await query.limit(1).maybeSingle()
 
             if (error) throw error
             return data as unknown as Pick<User, 'id' | 'name' | 'email' | 'avatar_url' | 'role' | 'department'> | null

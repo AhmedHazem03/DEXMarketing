@@ -146,6 +146,7 @@
         "uploading": "Uploading...",
         "uploadNow": "Upload Now",
         "saving": "Saving...",
+        "email": "Email",
         "emailChangeNote": "To change email, go to Account page",
         "fileSizeError": "Image size must be less than 2MB",
         "fileTypeError": "Please select a valid image"

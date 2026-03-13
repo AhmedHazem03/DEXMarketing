@@ -78,8 +78,8 @@ const DEPARTMENT_REQUIRED_ROLES = ['team_leader', 'creator', 'videographer', 'ed
 /** Auto-assign department based on role if not explicitly provided */
 function resolveDepartment(role: string, department?: string | null): string | null {
     if (department) return department
-    if (['videographer', 'editor', 'photographer'].includes(role)) return 'photography'
-    if (role === 'creator') return 'content'
+    if (['videographer', 'editor', 'photographer', 'team_leader'].includes(role)) return 'photography'
+    if (['creator', 'designer', 'account_manager'].includes(role)) return 'content'
     return null
 }
 

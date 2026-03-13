@@ -15,6 +15,7 @@ export interface ScheduleWithRelations extends Schedule {
     client?: Pick<Client, 'id' | 'name'> | null
     project?: Pick<Project, 'id' | 'name'> | null
     task?: Pick<Task, 'id' | 'title'> | null
+    creator?: Pick<User, 'id' | 'name' | 'avatar_url'> | null
     // Populated client-side from assigned_members UUIDs
     assigned_member_details?: Pick<User, 'id' | 'name' | 'avatar_url' | 'role'>[]
 }

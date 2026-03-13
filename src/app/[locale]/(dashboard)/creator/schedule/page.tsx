@@ -10,7 +10,7 @@ export default function CreatorSchedulePage() {
     const locale = useLocale()
     const isAr = locale === 'ar'
     const { data: currentUser, isLoading: userLoading } = useCurrentUser()
-    const { data: leader, isLoading: leaderLoading } = useMyDepartmentLeader(currentUser?.department)
+    const { data: leader, isLoading: leaderLoading } = useMyDepartmentLeader(currentUser?.department, currentUser?.role)
 
     const isLoading = userLoading || leaderLoading
 
