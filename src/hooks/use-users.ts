@@ -90,21 +90,14 @@ export function useUser(userId: string) {
  * Hook to update a user
  */
 export function useUpdateUser() {
-    const supabase = createClient()
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: async ({ id, ...updates }: { id: string; name?: string; role?: UserRole; is_active?: boolean }) => {
-            const { data, error } = await supabase
-                .from('users')
-                // @ts-ignore - Supabase types don't match our schema yet
-                .update(updates)
-                .eq('id', id)
-                .select()
-                .single()
-
-            if (error) throw error
-            return data as unknown as User
+            const { updateUserAdmin } = await import('@/lib/actions/users')
+            const result = await updateUserAdmin(id, updates)
+            if (!result.success) throw new Error(result.error || 'Failed to update user')
+            return result.user as unknown as User
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: USERS_KEY })
@@ -113,20 +106,16 @@ export function useUpdateUser() {
 }
 
 /**
- * Hook to delete a user
+ * Hook to delete a user (removes from both DB and Supabase Auth)
  */
 export function useDeleteUser() {
-    const supabase = createClient()
     const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: async (userId: string) => {
-            const { error } = await supabase
-                .from('users')
-                .delete()
-                .eq('id', userId)
-
-            if (error) throw error
+            const { deleteAccount } = await import('@/lib/actions/users')
+            const result = await deleteAccount(userId)
+            if (!result.success) throw new Error(result.error || 'Failed to delete user')
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: USERS_KEY })

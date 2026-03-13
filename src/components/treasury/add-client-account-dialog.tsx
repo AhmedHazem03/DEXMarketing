@@ -40,9 +40,20 @@ import {
     PopoverTrigger,
 } from '@/components/ui/popover'
 
+import type { Package } from '@/types/database'
 import { useClients } from '@/hooks/use-clients'
 import { usePackages, useCreateClientAccount } from '@/hooks'
 import { cn } from '@/lib/utils'
+
+type ClientWithUser = {
+    id: string
+    name?: string | null
+    email?: string | null
+    phone?: string | null
+    created_at?: string | null
+    user?: { id: string; name: string | null; email: string; role: string } | null
+    [key: string]: unknown
+}
 
 // ============================================
 // Schema
@@ -70,9 +81,9 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
 
     const [clientSearchOpen, setClientSearchOpen] = useState(false)
     const [clientSearchQuery, setClientSearchQuery] = useState('')
-    const [selectedPackage, setSelectedPackage] = useState<any>(null)
+    const [selectedPackage, setSelectedPackage] = useState<Package | null>(null)
 
-    const { data: clients } = useClients()
+    const { data: clients, isLoading: clientsLoading } = useClients()
     const { data: packages } = usePackages(true) // Active packages only
     const createClientAccount = useCreateClientAccount()
 
@@ -87,12 +98,15 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
     const selectedClientId = form.watch('client_id')
     const selectedPackageId = form.watch('package_id')
 
+    const typedClients = clients as ClientWithUser[] | undefined
+
     // Filter clients based on search query
-    const filteredClients = clients?.filter((client) => {
+    const filteredClients = typedClients?.filter((client) => {
         if (!clientSearchQuery) return true
         const query = clientSearchQuery.toLowerCase()
+        const displayName = client.user?.name || client.name || ''
         return (
-            client.name?.toLowerCase().includes(query) ||
+            displayName.toLowerCase().includes(query) ||
             client.email?.toLowerCase().includes(query) ||
             client.phone?.includes(query)
         )
@@ -102,7 +116,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
     useEffect(() => {
         if (selectedPackageId && packages) {
             const pkg = packages.find(p => p.id === selectedPackageId)
-            setSelectedPackage(pkg)
+            setSelectedPackage(pkg ?? null)
         } else {
             setSelectedPackage(null)
         }
@@ -125,7 +139,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
     const isLoading = createClientAccount.isPending
 
     // Find selected client for display
-    const selectedClient = clients?.find(c => c.id === selectedClientId)
+    const selectedClient = typedClients?.find(c => c.id === selectedClientId)
 
     return (
         <Dialog open={open} onOpenChange={(isOpen) => {
@@ -133,6 +147,8 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
             if (!isOpen) {
                 form.reset()
                 setSelectedPackage(null)
+                setClientSearchQuery('')
+                setClientSearchOpen(false)
             }
         }}>
             <DialogContent className="sm:max-w-[500px]">
@@ -174,7 +190,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                                                 >
                                                     <span className="truncate">
                                                         {field.value
-                                                            ? ((selectedClient as any)?.user?.name || selectedClient?.name || selectedClient?.email || 'عميل')
+                                                            ? (selectedClient?.user?.name || selectedClient?.name || selectedClient?.email || 'عميل')
                                                             : (isAr ? 'اختر العميل...' : 'Select client...')
                                                         }
                                                     </span>
@@ -183,9 +199,9 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                                             </FormControl>
                                         </PopoverTrigger>
                                         <PopoverContent className="w-[400px] p-0 z-[200]" align="start">
-                                            <div className="flex flex-col">
+                                            <div className="flex flex-col max-h-[360px] overflow-hidden">
                                                 {/* Search Input */}
-                                                <div className="flex items-center border-b px-3">
+                                                <div className="flex items-center border-b px-3 shrink-0">
                                                     <Search className="me-2 h-4 w-4 shrink-0 opacity-50" />
                                                     <input
                                                         className="flex h-10 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
@@ -195,16 +211,19 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                                                     />
                                                 </div>
                                                 {/* Client List */}
-                                                <div className="max-h-[300px] overflow-y-auto p-1">
-                                                    {!filteredClients || filteredClients.length === 0 ? (
+                                                <div className="flex-1 overflow-y-auto p-1">
+                                                    {clientsLoading ? (
+                                                        <div className="py-6 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+                                                            <Loader2 className="h-4 w-4 animate-spin" />
+                                                            {isAr ? 'جاري التحميل...' : 'Loading...'}
+                                                        </div>
+                                                    ) : !filteredClients || filteredClients.length === 0 ? (
                                                         <div className="py-6 text-center text-sm text-muted-foreground">
                                                             {isAr ? 'لا يوجد عملاء' : 'No clients found'}
                                                         </div>
                                                     ) : (
                                                         filteredClients.map((client) => {
-                                                            // Prioritize user.name (from users table) over client.name
-                                                            const userName = (client as any).user?.name
-                                                            const displayName = userName || client.name || client.email || 'عميل بدون اسم'
+                                                            const displayName = client.user?.name || client.name || client.email || 'عميل بدون اسم'
                                                             const subtitle = client.email
                                                             const createdDate = client.created_at 
                                                                 ? format(new Date(client.created_at), 'PPP', { locale: isAr ? ar : enUS })
@@ -269,11 +288,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                                 <FormItem>
                                     <FormLabel>{isAr ? 'الباقة' : 'Package'} *</FormLabel>
                                     <Select
-                                        onValueChange={(value) => {
-                                            field.onChange(value)
-                                            const pkg = packages?.find(p => p.id === value)
-                                            setSelectedPackage(pkg)
-                                        }}
+                                        onValueChange={field.onChange}
                                         value={field.value}
                                     >
                                         <FormControl>

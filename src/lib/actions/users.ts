@@ -219,6 +219,73 @@ export async function updateEmail(_userId: string, _newEmail: string) {
 }
 
 /**
+ * Update user fields (Admin only) — handles client record sync on role change
+ */
+export async function updateUserAdmin(userId: string, updates: { name?: string; role?: string; is_active?: boolean }) {
+    try {
+        await requireAdmin()
+    } catch (e: any) {
+        return { success: false, error: e.message || 'Unauthorized' }
+    }
+
+    const supabase = createAdminClient()
+
+    // If role is being changed, sync the clients table
+    if (updates.role !== undefined) {
+        const { data: current } = await supabase
+            .from('users')
+            .select('role, name, email')
+            .eq('id', userId)
+            .single()
+
+        const oldRole = (current as any)?.role
+        const newRole = updates.role
+
+        if (oldRole === 'client' && newRole !== 'client') {
+            // Was client → remove client record
+            const { error: delErr } = await supabase
+                .from('clients')
+                .delete()
+                .eq('user_id', userId)
+            if (delErr) console.error('Remove client record error:', delErr)
+        } else if (oldRole !== 'client' && newRole === 'client') {
+            // Became client → create client record if not exists
+            const { data: existing } = await supabase
+                .from('clients')
+                .select('id')
+                .eq('user_id', userId)
+                .maybeSingle()
+            if (!existing) {
+                const { error: insErr } = await supabase
+                    .from('clients')
+                    .insert({
+                        user_id: userId,
+                        name: (current as any)?.name || '',
+                        email: (current as any)?.email || '',
+                    } as any)
+                if (insErr) console.error('Create client record error:', insErr)
+            }
+        }
+    }
+
+    const { data: updatedUser, error } = await supabase
+        .from('users')
+        // @ts-ignore
+        .update(updates)
+        .eq('id', userId)
+        .select()
+        .single()
+
+    if (error) {
+        console.error('Update User Error:', error)
+        return { success: false, error: error.message }
+    }
+
+    revalidatePath('/[locale]/(dashboard)/admin/users')
+    return { success: true, user: updatedUser }
+}
+
+/**
  * Update user password (Admin only)
  */
 export async function updatePassword(userId: string, newPassword: string) {
@@ -261,6 +328,25 @@ export async function deleteAccount(userId: string) {
     }
 
     const supabase = createAdminClient()
+
+    // Delete from clients table if the user has role 'client'
+    const { data: userProfile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', userId)
+        .single()
+
+    if (userProfile?.role === 'client') {
+        const { error: clientDeleteError } = await supabase
+            .from('clients')
+            .delete()
+            .eq('user_id', userId)
+
+        if (clientDeleteError) {
+            console.error('Delete Client Record Error:', clientDeleteError)
+            return { success: false, error: 'Failed to delete client record: ' + clientDeleteError.message }
+        }
+    }
 
     // First, deactivate the user — check for errors before proceeding
     const { error: deactivateError } = await supabase

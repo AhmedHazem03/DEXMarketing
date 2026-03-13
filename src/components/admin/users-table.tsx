@@ -1,11 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Input } from '@/components/ui/input'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import {
     Table,
     TableBody,
@@ -33,11 +41,13 @@ import {
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
 import { useUsers, useUpdateUser, useDeleteUser } from '@/hooks'
-import { MoreHorizontal, Shield, UserX, Loader2, Key } from 'lucide-react'
+import { MoreHorizontal, Shield, UserX, Loader2, Key, Search, ChevronLeft, ChevronRight } from 'lucide-react'
 import { toast } from 'sonner'
 import type { UserRole } from '@/types/database'
 import { AddUserDialog } from '@/components/admin/add-user-dialog'
 import { ChangePasswordDialog } from '@/components/admin/change-password-dialog'
+
+const ITEMS_PER_PAGE = 10
 
 const roleColors: Record<UserRole, string> = {
     admin: 'bg-red-500/20 text-red-400 border-red-500/30',
@@ -72,6 +82,37 @@ export function UsersTable() {
     const deleteUser = useDeleteUser()
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null)
     const [passwordChangeTarget, setPasswordChangeTarget] = useState<{ id: string; name: string } | null>(null)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [roleFilter, setRoleFilter] = useState<UserRole | 'all'>('all')
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const filteredUsers = useMemo(() => {
+        if (!users) return []
+        return users.filter((user) => {
+            const matchesSearch =
+                !searchQuery ||
+                user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                (user.name && user.name.toLowerCase().includes(searchQuery.toLowerCase()))
+            const matchesRole = roleFilter === 'all' || user.role === roleFilter
+            return matchesSearch && matchesRole
+        })
+    }, [users, searchQuery, roleFilter])
+
+    const totalPages = Math.max(1, Math.ceil(filteredUsers.length / ITEMS_PER_PAGE))
+    const paginatedUsers = filteredUsers.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE
+    )
+
+    const handleSearchChange = (value: string) => {
+        setSearchQuery(value)
+        setCurrentPage(1)
+    }
+
+    const handleRoleFilterChange = (value: string) => {
+        setRoleFilter(value as UserRole | 'all')
+        setCurrentPage(1)
+    }
 
     const handleRoleChange = async (userId: string, role: UserRole) => {
         try {
@@ -131,7 +172,38 @@ export function UsersTable() {
                 </div>
                 <AddUserDialog />
             </CardHeader>
-            <CardContent>
+            <CardContent className="space-y-4">
+                {/* Search & Filter Bar */}
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <div className="relative flex-1">
+                        <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                        <Input
+                            placeholder="البحث بالاسم أو البريد الإلكتروني..."
+                            value={searchQuery}
+                            onChange={(e) => handleSearchChange(e.target.value)}
+                            className="ps-9"
+                        />
+                    </div>
+                    <Select value={roleFilter} onValueChange={handleRoleFilterChange}>
+                        <SelectTrigger className="w-full sm:w-48">
+                            <SelectValue placeholder="كل الأدوار" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="all">كل الأدوار</SelectItem>
+                            <SelectItem value="admin">{t('roleAdmin')}</SelectItem>
+                            <SelectItem value="account_manager">{t('roleAccountManager')}</SelectItem>
+                            <SelectItem value="team_leader">{t('roleTeamLeader')}</SelectItem>
+                            <SelectItem value="accountant">{t('roleAccountant')}</SelectItem>
+                            <SelectItem value="creator">{t('roleCreator')}</SelectItem>
+                            <SelectItem value="designer">{t('roleDesigner')}</SelectItem>
+                            <SelectItem value="videographer">{t('roleVideographer')}</SelectItem>
+                            <SelectItem value="editor">{t('roleEditor')}</SelectItem>
+                            <SelectItem value="photographer">{t('rolePhotographer')}</SelectItem>
+                            <SelectItem value="client">{t('roleClient')}</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-muted/50">
@@ -144,7 +216,14 @@ export function UsersTable() {
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {users?.map((user) => (
+                        {paginatedUsers.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
+                                    لا توجد نتائج مطابقة للبحث
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            paginatedUsers.map((user) => (
                             <TableRow key={user.id}>
                                 <TableCell>
                                     <div className="flex items-center gap-3">
@@ -215,9 +294,42 @@ export function UsersTable() {
                                     </DropdownMenu>
                                 </TableCell>
                             </TableRow>
-                        ))}
+                        ))
+                        )}
                     </TableBody>
                 </Table>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between pt-2">
+                        <p className="text-sm text-muted-foreground">
+                            عرض {((currentPage - 1) * ITEMS_PER_PAGE) + 1}–{Math.min(currentPage * ITEMS_PER_PAGE, filteredUsers.length)} من {filteredUsers.length} مستخدم
+                        </p>
+                        <div className="flex items-center gap-2">
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                aria-label="الصفحة السابقة"
+                            >
+                                <ChevronRight className="h-4 w-4" />
+                            </Button>
+                            <span className="text-sm font-medium min-w-[80px] text-center">
+                                {currentPage} / {totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                aria-label="الصفحة التالية"
+                            >
+                                <ChevronLeft className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    </div>
+                )}
             </CardContent>
 
             <ChangePasswordDialog
