@@ -124,19 +124,44 @@ function CommentItem({ comment, currentUserId, onDelete, isDeleting }: CommentIt
             </div>
 
             {isOwner && (
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={onDelete}
-                    disabled={isDeleting}
-                >
-                    {isDeleting ? (
-                        <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                        <Trash2 className="h-3 w-3 text-destructive" />
-                    )}
-                </Button>
+                <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                            disabled={isDeleting}
+                        >
+                            {isDeleting ? (
+                                <Loader2 className="h-3 w-3 animate-spin" />
+                            ) : (
+                                <Trash2 className="h-3 w-3 text-destructive" />
+                            )}
+                        </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {isAr ? 'حذف التعليق؟' : 'Delete Comment?'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {isAr
+                                    ? 'سيتم حذف هذا التعليق بشكل نهائي.'
+                                    : 'This comment will be permanently deleted.'
+                                }
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{isAr ? 'إلغاء' : 'Cancel'}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={onDelete}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {isAr ? 'حذف' : 'Delete'}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             )}
         </div>
     )
@@ -164,6 +189,7 @@ function AttachmentItem({
     const locale = useLocale()
     const isAr = locale === 'ar'
     const isOwner = attachment.uploaded_by === currentUserId
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
     const FileIcon = getFileIcon(attachment.file_type)
 
     return (
@@ -228,7 +254,10 @@ function AttachmentItem({
                             <>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                    onClick={onDelete}
+                                    onClick={(e) => {
+                                        e.preventDefault()
+                                        setShowDeleteDialog(true)
+                                    }}
                                     className="text-destructive"
                                     disabled={isDeleting}
                                 >
@@ -239,6 +268,35 @@ function AttachmentItem({
                         )}
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Delete Confirmation Dialog */}
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {isAr ? 'حذف المرفق؟' : 'Delete Attachment?'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {isAr
+                                    ? `سيتم حذف الملف "${attachment.file_name}" بشكل نهائي.`
+                                    : `The file "${attachment.file_name}" will be permanently deleted.`
+                                }
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{isAr ? 'إلغاء' : 'Cancel'}</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={() => {
+                                    onDelete()
+                                    setShowDeleteDialog(false)
+                                }}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                {isAr ? 'حذف' : 'Delete'}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </div>
     )

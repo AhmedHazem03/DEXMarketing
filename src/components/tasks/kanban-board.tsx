@@ -22,6 +22,16 @@ import {
     DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import {
     Select,
     SelectContent,
     SelectItem,
@@ -79,6 +89,8 @@ interface TaskCardProps {
 const TaskCard = memo(function TaskCard({ task, onClick, isDragging, onDelete }: TaskCardProps) {
     const locale = useLocale()
     const isAr = locale === 'ar'
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
     const priorityConfig = getPriorityConfig(task.priority)
 
     const deadline = task.deadline ? new Date(task.deadline) : null
@@ -137,20 +149,54 @@ const TaskCard = memo(function TaskCard({ task, onClick, isDragging, onDelete }:
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                             className="text-destructive"
-                            onClick={async (e) => {
+                            onClick={(e) => {
                                 e.stopPropagation()
-                                try {
-                                    await onDelete?.(task.id)
-                                    toast.success(isAr ? 'تم حذف المهمة' : 'Task deleted')
-                                } catch {
-                                    toast.error(isAr ? 'فشل حذف المهمة' : 'Failed to delete task')
-                                }
+                                setShowDeleteDialog(true)
                             }}
                         >
                             {isAr ? 'حذف' : 'Delete'}
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+
+                {/* Delete Confirmation Dialog */}
+                <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>
+                                {isAr ? 'حذف المهمة؟' : 'Delete Task?'}
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {isAr
+                                    ? 'سيتم حذف المهمة وجميع التعليقات والمرفقات بشكل نهائي.'
+                                    : 'This will permanently delete the task and all its comments and attachments.'
+                                }
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>{isAr ? 'إلغاء' : 'Cancel'}</AlertDialogCancel>
+                            <AlertDialogAction
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                disabled={isDeleting}
+                                onClick={async (e) => {
+                                    e.stopPropagation()
+                                    setIsDeleting(true)
+                                    try {
+                                        await onDelete?.(task.id)
+                                        toast.success(isAr ? 'تم حذف المهمة' : 'Task deleted')
+                                    } catch {
+                                        toast.error(isAr ? 'فشل حذف المهمة' : 'Failed to delete task')
+                                    } finally {
+                                        setIsDeleting(false)
+                                        setShowDeleteDialog(false)
+                                    }
+                                }}
+                            >
+                                {isAr ? 'حذف' : 'Delete'}
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
 
             {/* Title */}

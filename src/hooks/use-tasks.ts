@@ -206,7 +206,7 @@ export function useTodayMyTasks(userId: string) {
                 .order('created_at', { ascending: true })
 
             if (error) throw error
-            // Filter out completed client-side to avoid PostgREST enum issues
+            // Filter out completed tasks
             const tasks = (data as unknown as TaskWithRelations[]) ?? []
             return tasks.filter(t => t.status !== 'completed')
         },
@@ -428,18 +428,22 @@ export function useUpdateTaskStatus() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ id, status }: { id: string; status: TaskStatus }) => {
+        mutationFn: async ({ id, status, clientId }: { id: string; status: TaskStatus; clientId?: string | null }) => {
             // Auto-route to client_review if approving a task with client_id
             let finalStatus = status
             if (status === 'approved') {
-                // Check if task has client_id
-                const { data: task } = await supabase
-                    .from('tasks')
-                    .select('client_id')
-                    .eq('id', id)
-                    .single() as { data: { client_id: string | null } | null; error: unknown }
+                // Use provided clientId to avoid an extra query; fall back to DB lookup if not provided
+                let hasClient = !!clientId
+                if (!hasClient && clientId === undefined) {
+                    const { data: task } = await supabase
+                        .from('tasks')
+                        .select('client_id')
+                        .eq('id', id)
+                        .single() as { data: { client_id: string | null } | null; error: unknown }
+                    hasClient = !!task?.client_id
+                }
 
-                if (task?.client_id) {
+                if (hasClient) {
                     finalStatus = 'client_review'
                 }
             }

@@ -85,25 +85,13 @@ export function useConversations(userId: string) {
                 }
             }
 
-            // Bulk-fetch unread counts: get all unread messages IDs per conversation
-            // Using a single count query is not possible per-conversation, but we can
-            // at least fetch all unread message IDs in one go and count client-side
-            let unreadQuery = supabase
-                .from('messages')
-                .select('conversation_id', { count: 'exact' })
-                .in('conversation_id', convIds)
-                .neq('sender_id', userId)
-
-            // For more accurate per-conversation counts, fetch ids grouped
+            // Bulk-fetch unread messages for per-conversation counts
             const { data: unreadMessages } = await supabase
                 .from('messages')
-                .select('id, conversation_id')
+                .select('id, conversation_id, created_at')
                 .in('conversation_id', convIds)
                 .neq('sender_id', userId)
                 .gt('created_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()) // last 30 days max
-
-            // Build unread count map, respecting last_read_at per conversation
-            const unreadCountMap = new Map<string, number>()
 
             // Build result using pre-fetched data (no N+1)
             const result: ConversationWithDetails[] = (conversations ?? []).map((conv: any) => {

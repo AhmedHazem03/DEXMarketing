@@ -1,5 +1,5 @@
 
-export { useUsers, useUser, useCurrentUser, useUpdateUser, useDeleteUser, useMyDepartmentLeader } from './use-users'
+export { useUsers, useUser, useCurrentUser, useUpdateUser, useDeleteUser, useMyDepartmentLeader, useTeamMembers } from './use-users'
 export { useCurrentRole, useIsAccountantOrAdmin } from './use-current-role'
 export {
     usePackages,
@@ -67,19 +67,27 @@ export {
     usePendingRequests,
     useApproveClientRequest,
     useRejectClientRequest,
+    // Forward & client tasks
+    useForwardTask,
+    useClientTasks,
+    useClientTasksStats,
 } from './use-tasks'
 export {
     useTreasury,
     useTransactions,
     useTransactionSummary,
     useCreateTransaction,
-    useDeleteTransaction
+    useUpdateTransaction,
+    useApproveTransaction,
+    useDeleteTransaction,
+    usePaymentMethodSummary,
 } from './use-treasury'
 export {
     useRealtimeSubscription,
     useNotificationsRealtime,
     useTasksRealtime,
     useSchedulesRealtime,
+    useClientAccountsRealtimeSync,
     useTreasuryRealtimeSync
 } from './use-realtime'
 export {
@@ -88,6 +96,8 @@ export {
     usePages,
     usePage,
     useUpdatePage,
+    useCreatePage,
+    useDeletePage,
     useCMSTeamMembers,
     useCreateTeamMember,
     useUpdateTeamMember,
@@ -190,3 +200,6 @@ export { useTeamActivityLog } from './use-team-logs'
 // Utility hooks
 export { usePagination } from './use-pagination'
 export { useDebounce } from './use-debounce'
+export { useThrottle } from './use-throttle'
+export { useAuthDashboardLink } from './use-auth-dashboard-link'
+export { useDeviceCapabilities } from './use-device-capabilities'

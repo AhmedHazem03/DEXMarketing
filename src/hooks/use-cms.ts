@@ -403,6 +403,7 @@ export function useUpdateMultipleSiteSettings() {
 
 export function useLogActivity() {
     const supabase = createClient()
+    const queryClient = useQueryClient()
 
     return useMutation({
         mutationFn: async (log: { action: string; details?: any; user_id?: string }) => {
@@ -412,6 +413,9 @@ export function useLogActivity() {
                 .insert(log)
 
             if (error) throw error
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ACTIVITY_KEY })
         },
     })
 }

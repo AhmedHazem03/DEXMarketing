@@ -55,8 +55,13 @@ export function useDeleteAdvanceRecipient() {
             const txIds = recipient.advances
                 .map(a => a.transaction_id)
                 .filter(Boolean) as string[]
-            for (const txId of txIds) {
-                await supabase.from('transactions').delete().eq('id', txId)
+            // Delete all transactions in parallel to avoid partial-delete inconsistency
+            if (txIds.length > 0) {
+                const results = await Promise.all(
+                    txIds.map(txId => supabase.from('transactions').delete().eq('id', txId))
+                )
+                const failed = results.find(r => r.error)
+                if (failed?.error) throw failed.error
             }
             // Delete recipient (DB ON DELETE CASCADE removes their advances)
             const { error } = await supabase
@@ -194,14 +199,16 @@ export function useDeleteAdvance() {
 
     return useMutation({
         mutationFn: async (advance: Advance) => {
+            // Delete transaction first to avoid orphaned transactions if advance delete succeeds but transaction delete fails
+            if (advance.transaction_id) {
+                const { error: txError } = await supabase.from('transactions').delete().eq('id', advance.transaction_id)
+                if (txError) throw txError
+            }
             const { error } = await supabase
                 .from('advances')
                 .delete()
                 .eq('id', advance.id)
             if (error) throw error
-            if (advance.transaction_id) {
-                await supabase.from('transactions').delete().eq('id', advance.transaction_id)
-            }
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: RECIPIENTS_KEY })

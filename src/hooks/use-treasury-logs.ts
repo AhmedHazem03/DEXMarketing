@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { sanitizeSearch } from '@/lib/utils'
 import type { TreasuryLog, User, Client } from '@/types/database'
 
 type TreasuryLogAction = TreasuryLog['action']
@@ -71,10 +72,13 @@ export function useTreasuryLogs(filters?: TreasuryLogsFilters) {
 
             // Server-side search filter using ilike (searches before limit is applied)
             if (filters?.search) {
-                const searchTerm = `%${filters.search}%`
-                query = query.or(
-                    `client_name.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`
-                )
+                const safe = sanitizeSearch(filters.search)
+                if (safe) {
+                    const searchTerm = `%${safe}%`
+                    query = query.or(
+                        `client_name.ilike.${searchTerm},description.ilike.${searchTerm},category.ilike.${searchTerm}`
+                    )
+                }
             }
 
             const { data, error } = await query

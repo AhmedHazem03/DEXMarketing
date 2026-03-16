@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { createClient } from '@/lib/supabase/client'
+import { sanitizeSearch } from '@/lib/utils'
 import { toast } from 'sonner'
 import type { Project, Client } from '@/types/database'
 
@@ -41,7 +42,10 @@ export function useProjects(filters?: ProjectFilters) {
       }
 
       if (filters?.search) {
-        query = query.ilike('name', `%${filters.search}%`)
+        const safe = sanitizeSearch(filters.search)
+        if (safe) {
+          query = query.ilike('name', `%${safe}%`)
+        }
       }
 
       const { data, error } = await query
