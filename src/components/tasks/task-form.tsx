@@ -8,6 +8,7 @@ import { useLocale } from 'next-intl'
 import { format } from 'date-fns'
 import { ar, enUS } from 'date-fns/locale'
 import { Calendar as CalendarIcon, Loader2, Save, X } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -213,11 +214,15 @@ export function TaskForm({
 
         // Determine department: prefer assigned user's department, then role-derived, then creator's
         const photographyRoles = ['videographer', 'editor', 'photographer']
+        // account_manager may have null department in DB → default to 'content'
+        const creatorDept =
+            currentUser?.department ??
+            (currentUser?.role === 'account_manager' ? 'content' : undefined) ??
+            undefined
         const department =
             assignedUser?.department ??
             (assignedUser?.role && photographyRoles.includes(assignedUser.role) ? 'photography' : undefined) ??
-            currentUser?.department ??
-            undefined
+            creatorDept
 
         // If assigned user is an editor, also set editor_id so they see it in their dashboard
         const editor_id = assignedUser?.role === 'editor' ? assignedToId : undefined
@@ -275,6 +280,12 @@ export function TaskForm({
             form.reset()
         } catch (error) {
             console.error('Failed to save task:', error)
+            const errMsg = (error as { message?: string })?.message ?? ''
+            if (errMsg.includes('row-level security') || errMsg.includes('violates') || errMsg.includes('policy')) {
+                toast.error(isAr ? 'ليس لديك صلاحية لإنشاء المهام — تواصل مع المدير' : 'No permission to create tasks — contact admin')
+            } else {
+                toast.error(isAr ? `فشل حفظ المهمة: ${errMsg || 'خطأ غير معروف'}` : `Failed to save task: ${errMsg || 'Unknown error'}`)
+            }
         }
     }
 

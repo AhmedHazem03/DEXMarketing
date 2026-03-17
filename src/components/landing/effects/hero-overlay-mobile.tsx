@@ -61,7 +61,7 @@ export function HeroOverlayMobile() {
                                 <div className="text-[#FFCC00] drop-shadow-[0_0_15px_rgba(251,191,36,0.15)]">
                                     <SplitText
                                         text="الإبداع يبدأ"
-                                        className="text-[2.6rem] font-black leading-tight inline-block"
+                                        className="text-[3.4rem] font-black leading-tight inline-block"
                                         delay={0.06}
                                         animationFrom={{ opacity: 0, y: 30 }}
                                         animationTo={{ opacity: 1, y: 0 }}
@@ -85,7 +85,7 @@ export function HeroOverlayMobile() {
                                     className="absolute -bottom-3 -left-2 z-10 pointer-events-none"
                                 >
                                     <span
-                                        className="relative text-[1.7rem] text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] whitespace-nowrap block"
+                                        className="relative text-[2.3rem] text-white drop-shadow-[0_4px_10px_rgba(0,0,0,0.6)] whitespace-nowrap block"
                                         style={{
                                             fontFamily: 'var(--font-aref-ruqaa)',
                                             letterSpacing: '0.02em',

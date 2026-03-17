@@ -172,7 +172,7 @@ export function AboutSection() {
                 {/* Core sphere */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div
-                    className="relative flex h-44 w-44 items-center justify-center rounded-full border border-white/15 bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.22),rgba(2,32,38,0.72)_48%,rgba(2,32,38,0.96)_100%)] shadow-[0_28px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(242,203,5,0.16),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-2xl"
+                    className="relative flex h-44 w-44 items-center justify-center rounded-full border border-white/15 bg-[radial-gradient(circle_at_30%_25%,rgba(255,255,255,0.22),rgba(2,32,38,0.72)_48%,rgba(2,32,38,0.96)_100%)] shadow-[0_28px_80px_rgba(0,0,0,0.6),0_0_80px_rgba(242,203,5,0.16),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-lg"
                     animate={shouldReduceMotion ? undefined : { y: [0, -10, 0], scale: [1, 1.03, 1] }}
                     transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
                   >

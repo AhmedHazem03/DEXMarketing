@@ -76,7 +76,7 @@ export function HeroSectionMobile() {
             <div className="pointer-events-none absolute top-0 left-0 right-0 h-32 z-[3] bg-gradient-to-b from-[#050505]/70 to-transparent" />
 
             {/* ===== النصف العلوي: صورة الرائد الفضائي ===== */}
-            <div className="relative z-[5] w-full flex-shrink-0" style={{ height: '50dvh' }}>
+            <div className="relative z-[5] w-full flex-shrink-0" style={{ height: 'calc(50dvh - 80px)', marginTop: '80px' }}>
                 <Image
                     src="/images/astronaut_hero.png"
                     alt={isAr ? 'رائد فضاء يمثل الإبداع والابتكار' : 'Astronaut representing creativity and innovation'}

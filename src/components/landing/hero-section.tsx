@@ -15,7 +15,7 @@ function StarField() {
     }>>([])
 
     useEffect(() => {
-        setStars(Array.from({ length: 160 }, (_, i) => ({
+        setStars(Array.from({ length: 80 }, (_, i) => ({
             id: i,
             x: Math.random() * 100,
             y: Math.random() * 100,
@@ -31,7 +31,7 @@ function StarField() {
     }, [])
 
     return (
-        <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 z-[2] pointer-events-none overflow-hidden" style={{ contain: 'strict' }}>
             <style>{`
                 @keyframes twinkle {
                     0%, 100% { opacity: var(--star-opacity); transform: scale(1); }
@@ -87,7 +87,7 @@ function HeroSectionDesktop() {
             {/* Hero Image */}
             <div className="absolute inset-0 z-[5] pointer-events-none flex items-end lg:items-start justify-center lg:justify-end overflow-hidden lg:pt-0">
                 <div
-                    className={`relative w-full max-w-[240px] sm:max-w-[360px] lg:max-w-[580px] h-[40vh] sm:h-[48vh] lg:h-[70vh] lg:translate-y-[35%] ${isAr ? 'lg:translate-x-[10%]' : 'lg:translate-x-[30%]'
+                    className={`relative w-full max-w-[240px] sm:max-w-[360px] lg:max-w-[580px] h-[40vh] sm:h-[48vh] lg:h-[70vh] lg:translate-y-[35%] ${isAr ? 'lg:translate-x-[10%]' : 'lg:translate-x-[0%]'
                         }`}
                 >
                     <div className="relative w-full h-full">

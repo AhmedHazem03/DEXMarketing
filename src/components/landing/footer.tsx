@@ -94,7 +94,7 @@ export function Footer({ initialUser, initialRole }: FooterProps) {
                                 alt="DEX Advertising"
                                 width={200}
                                 height={100}
-                                className="w-[120px] h-auto object-contain
+                                className="w-[80px] sm:w-[120px] h-auto object-contain
                                            drop-shadow-[0_0_10px_rgba(251,191,36,0.30)]"
                             />
                         </div>

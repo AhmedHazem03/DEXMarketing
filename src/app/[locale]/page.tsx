@@ -73,25 +73,39 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
           <HeroSection />
         </ErrorBoundary>
         <ErrorBoundary>
-          <PartnersOrbit />
+          <div className="cv-auto">
+            <PartnersOrbit />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <StatsSection />
+          <div className="cv-auto">
+            <StatsSection />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <ServicesSection />
+          <div className="cv-auto">
+            <ServicesSection />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <PortfolioSection />
+          <div className="cv-auto">
+            <PortfolioSection />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <AboutSection />
+          <div className="cv-auto">
+            <AboutSection />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <TestimonialsSection />
+          <div className="cv-auto">
+            <TestimonialsSection />
+          </div>
         </ErrorBoundary>
         <ErrorBoundary>
-          <CTASection />
+          <div className="cv-auto">
+            <CTASection />
+          </div>
         </ErrorBoundary>
         <Footer />
       </main>

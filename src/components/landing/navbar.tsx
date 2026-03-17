@@ -55,7 +55,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
             transition={{ duration: 0.6, delay: 0.2 }}
             style={{ position: 'fixed' }} // Explicitly set position for Framer Motion
             className={`top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
-                    ? 'bg-background/60 backdrop-blur-2xl shadow-[0_1px_0_rgba(255,255,255,0.04)] border-b border-white/[0.04]'
+                    ? 'bg-background/70 backdrop-blur-xl shadow-[0_1px_0_rgba(255,255,255,0.04)] border-b border-white/[0.04]'
                     : ''
                 }`}
         >
@@ -68,7 +68,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                             alt="DEX Advertising"
                             width={160}
                             height={80}
-                            className="w-[88px] h-auto object-contain transition-transform duration-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.30)] hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.85)] hover:scale-105"
+                            className="w-[60px] sm:w-[88px] h-auto object-contain transition-transform duration-300 drop-shadow-[0_0_6px_rgba(251,191,36,0.30)] hover:drop-shadow-[0_0_22px_rgba(251,191,36,0.85)] hover:scale-105"
                             priority
                         />
                     </Link>
@@ -147,7 +147,7 @@ export function Navbar({ initialUser, initialRole }: NavbarProps) {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="md:hidden bg-background/95 backdrop-blur-2xl border-b border-white/[0.04]"
+                        className="md:hidden bg-background/95 backdrop-blur-xl border-b border-white/[0.04]"
                     >
                         <div className="container mx-auto px-6 py-6 space-y-1">
                             {NAV_LINKS.map((link) => (
