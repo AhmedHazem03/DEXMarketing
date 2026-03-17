@@ -52,7 +52,7 @@ import {
 import type { TaskStatus, TaskPriority, Department } from '@/types/database'
 
 // ============================================
-// Types
+// Types in DB
 // ============================================
 
 interface KanbanBoardProps {
