@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { format } from 'date-fns'
 import { ar, enUS } from 'date-fns/locale'
-import { Loader2, Search, Check } from 'lucide-react'
+import { Loader2, Search, Check, AlertTriangle } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -43,6 +43,7 @@ import {
 import type { Package } from '@/types/database'
 import { useClients } from '@/hooks/use-clients'
 import { usePackages, useCreateClientAccount } from '@/hooks'
+import { useClientAccounts } from '@/hooks/use-client-accounts'
 import { cn } from '@/lib/utils'
 
 type ClientWithUser = {
@@ -86,6 +87,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
     const { data: clients, isLoading: clientsLoading } = useClients()
     const { data: packages } = usePackages(true) // Active packages only
     const createClientAccount = useCreateClientAccount()
+    const { data: allClientAccounts } = useClientAccounts()
 
     const form = useForm<ClientAccountFormValues>({
         resolver: zodResolver(clientAccountSchema),
@@ -97,6 +99,11 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
 
     const selectedClientId = form.watch('client_id')
     const selectedPackageId = form.watch('package_id')
+
+    // Check if selected client already has an account
+    const clientAlreadyHasAccount = selectedClientId
+        ? (allClientAccounts?.some(acc => acc.client_id === selectedClientId) ?? false)
+        : false
 
     const typedClients = clients as ClientWithUser[] | undefined
 
@@ -272,9 +279,17 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                                             </div>
                                         </PopoverContent>
                                     </Popover>
-                                    <FormDescription>
-                                        {isAr ? 'العميل يمكنه الاشتراك في أكثر من باقة' : 'Client can subscribe to multiple packages'}
-                                    </FormDescription>
+                                    {clientAlreadyHasAccount && (
+                                        <div className="flex items-center gap-2 rounded-md border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm text-amber-600 dark:text-amber-400">
+                                            <AlertTriangle className="h-4 w-4 shrink-0" />
+                                            <span>
+                                                {isAr
+                                                    ? 'هذا العميل لديه حساب بالفعل'
+                                                    : 'This client already has an account'
+                                                }
+                                            </span>
+                                        </div>
+                                    )}
                                     <FormMessage />
                                 </FormItem>
                             )}
@@ -350,7 +365,7 @@ export function AddClientAccountDialog({ open, onOpenChange }: AddClientAccountD
                             >
                                 {isAr ? 'إلغاء' : 'Cancel'}
                             </Button>
-                            <Button type="submit" disabled={isLoading}>
+                            <Button type="submit" disabled={isLoading || clientAlreadyHasAccount}>
                                 {isLoading && <Loader2 className="me-2 h-4 w-4 animate-spin" />}
                                 {isAr ? 'إضافة الحساب' : 'Add Account'}
                             </Button>

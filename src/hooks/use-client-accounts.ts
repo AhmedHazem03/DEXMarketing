@@ -188,6 +188,19 @@ export function useCreateClientAccount() {
             start_date?: string
             end_date?: string
         }) => {
+            // Check if client already has an account
+            const { data: existingAccounts, error: checkError } = await supabase
+                .from('client_accounts')
+                .select('id')
+                .eq('client_id', accountData.client_id)
+                .limit(1)
+
+            if (checkError) throw checkError
+
+            if (existingAccounts && existingAccounts.length > 0) {
+                throw new Error('هذا العميل لديه حساب بالفعل')
+            }
+
             // Fetch package details to store snapshot
             const { data: packageData } = await supabase
                 .from('packages')
