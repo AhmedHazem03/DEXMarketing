@@ -114,7 +114,7 @@ export function ServicesSection() {
                     className="mb-24 text-center"
                 >
                      
-                    <h2 id="services-heading" className="mt-6 text-4xl font-black md:text-5xl lg:text-7xl font-serif text-glow-white">
+                    <h2 id="services-heading" className="mt-6 text-4xl font-black md:text-5xl lg:text-7xl font-heading text-glow-white">
                         {isAr ? 'كل ما تحتاجه ' : 'Everything You '}
                         <span className="text-primary">
                             {isAr ? 'للنجاح' : 'Need to Win'}
