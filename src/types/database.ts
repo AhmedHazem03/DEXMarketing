@@ -11,7 +11,7 @@ export type Json =
     | Json[]
 
 // Enums
-export type UserRole = 'admin' | 'accountant' | 'team_leader' | 'account_manager' | 'creator' | 'designer' | 'client' | 'videographer' | 'editor' | 'photographer'
+export type UserRole = 'admin' | 'accountant' | 'team_leader' | 'account_manager' | 'creator' | 'designer' | 'client' | 'videographer' | 'editor' | 'photographer' | 'moderator'
 export type Department = 'photography' | 'content'
 export type ProjectStatus = 'active' | 'completed' | 'on_hold' | 'cancelled'
 export type TaskStatus = 'new' | 'in_progress' | 'review' | 'client_review' | 'client_revision' | 'revision' | 'approved' | 'rejected' | 'completed'

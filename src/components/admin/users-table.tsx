@@ -60,6 +60,7 @@ const roleColors: Record<UserRole, string> = {
     photographer: 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30',
     account_manager: 'bg-teal-500/20 text-teal-400 border-teal-500/30',
     designer: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
+    moderator: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
 }
 
 const ROLE_I18N_KEYS: Record<UserRole, string> = {
@@ -73,6 +74,7 @@ const ROLE_I18N_KEYS: Record<UserRole, string> = {
     photographer: 'rolePhotographer',
     account_manager: 'roleAccountManager',
     designer: 'roleDesigner',
+    moderator: 'roleModerator',
 }
 
 export function UsersTable() {
@@ -199,6 +201,7 @@ export function UsersTable() {
                             <SelectItem value="videographer">{t('roleVideographer')}</SelectItem>
                             <SelectItem value="editor">{t('roleEditor')}</SelectItem>
                             <SelectItem value="photographer">{t('rolePhotographer')}</SelectItem>
+                            <SelectItem value="moderator">{t('roleModerator')}</SelectItem>
                             <SelectItem value="client">{t('roleClient')}</SelectItem>
                         </SelectContent>
                     </Select>
@@ -284,6 +287,7 @@ export function UsersTable() {
                                             <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'videographer')}>{t('roleVideographer')}</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'editor')}>{t('roleEditor')}</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'photographer')}>{t('rolePhotographer')}</DropdownMenuItem>
+                                            <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'moderator')}>{t('roleModerator')}</DropdownMenuItem>
                                             <DropdownMenuItem onClick={() => handleRoleChange(user.id, 'client')}>{t('roleClient')}</DropdownMenuItem>
                                             <DropdownMenuSeparator />
                                             <DropdownMenuItem className="text-destructive focus:text-destructive" onClick={() => setDeleteTarget(user.id)}>

@@ -452,7 +452,7 @@ export const PHOTOGRAPHY_ROLES = ['videographer', 'editor', 'photographer'] as c
 export const CONTENT_ROLES = ['creator', 'designer'] as const
 
 /** Shared roles (not department-specific) */
-export const SHARED_ROLES = ['admin', 'accountant', 'client'] as const
+export const SHARED_ROLES = ['admin', 'accountant', 'client', 'moderator'] as const
 
 /** Check if a role needs a department */
 export function roleDepartment(role: string): Department | null {

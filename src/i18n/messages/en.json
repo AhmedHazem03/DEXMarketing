@@ -246,6 +246,7 @@
         "rolePhotographer": "Photographer",
         "roleAccountManager": "Account Manager",
         "roleDesigner": "Designer",
+        "roleModerator": "Moderator",
         "roleUpdateSuccess": "Role updated successfully",
         "roleUpdateError": "Error updating role",
         "accountDeactivated": "Account deactivated",
@@ -556,7 +557,8 @@
             "videographer": "Videographer",
             "editor": "Editor",
             "photographer": "Photographer",
-            "client": "Client"
+            "client": "Client",
+            "moderator": "Moderator"
         }
     }
 }

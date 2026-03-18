@@ -117,6 +117,12 @@ export const getRoutes = (
                 { name: t('Schedule', 'الجدول'), href: '/photographer/schedule', icon: Calendar },
             ]
 
+        case 'moderator':
+            return [
+                { name: t('Photography Tasks', 'مهام التصوير'), href: '/moderator', icon: Camera },
+                { name: t('Content Tasks', 'مهام المحتوى'), href: '/moderator/content', icon: FileText },
+            ]
+
         default:
             return []
     }

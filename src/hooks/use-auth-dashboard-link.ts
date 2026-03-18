@@ -21,6 +21,7 @@ const ROLE_DASHBOARD_MAP: Record<string, string> = {
   videographer: '/videographer',
   accountant: '/accountant',
   client: '/client',
+  moderator: '/moderator',
 }
 
 export function useAuthDashboardLink(

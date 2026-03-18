@@ -25,7 +25,7 @@ function createFormSchema(t: ReturnType<typeof useTranslations<'addUser'>>) {
             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
             t('passwordComplexity')
         ),
-        role: z.enum(['admin', 'accountant', 'team_leader', 'account_manager', 'creator', 'designer', 'client', 'videographer', 'editor', 'photographer']),
+        role: z.enum(['admin', 'accountant', 'team_leader', 'account_manager', 'creator', 'designer', 'client', 'videographer', 'editor', 'photographer', 'moderator']),
         department: z.enum(['photography', 'content']).nullable().optional(),
     }).superRefine((data, ctx) => {
         // Only team_leader picks a department manually; all other roles are auto-assigned
@@ -173,6 +173,7 @@ export function AddUserDialog() {
                                             <SelectItem value="account_manager">{t('roles.account_manager')}</SelectItem>
                                             <SelectItem value="team_leader">{t('roles.team_leader')}</SelectItem>
                                             <SelectItem value="accountant">{t('roles.accountant')}</SelectItem>
+                                            <SelectItem value="moderator">{t('roles.moderator')}</SelectItem>
                                             <SelectItem value="creator">{t('roles.creator')}</SelectItem>
                                             <SelectItem value="designer">{t('roles.designer')}</SelectItem>
                                             <SelectItem value="videographer">{t('roles.videographer')}</SelectItem>

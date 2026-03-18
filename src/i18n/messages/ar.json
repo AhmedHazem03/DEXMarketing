@@ -246,6 +246,7 @@
         "rolePhotographer": "مصور فوتوغرافي",
         "roleAccountManager": "مدير المحتوي",
         "roleDesigner": "مصمم",
+        "roleModerator": "مودريتور",
         "roleUpdateSuccess": "تم تحديث الدور بنجاح",
         "roleUpdateError": "حدث خطأ أثناء تحديث الدور",
         "accountDeactivated": "تم تعطيل الحساب",
@@ -556,7 +557,8 @@
             "videographer": "مصور فيديو",
             "editor": "مونتير",
             "photographer": "مصور فوتوغرافي",
-            "client": "عميل"
+            "client": "عميل",
+            "moderator": "مودريتور"
         }
     }
 }

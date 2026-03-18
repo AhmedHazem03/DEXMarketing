@@ -16,6 +16,7 @@ const ROLE_PATH_MAP: Record<string, string[]> = {
     videographer: ['/videographer'],
     editor: ['/editor'],
     photographer: ['/photographer'],
+    moderator: ['/moderator'],
 }
 
 /** The default landing path for each role */
@@ -30,6 +31,7 @@ const ROLE_HOME: Record<string, string> = {
     videographer: '/videographer',
     editor: '/editor',
     photographer: '/photographer',
+    moderator: '/moderator',
 }
 
 export default async function DashboardLayout({

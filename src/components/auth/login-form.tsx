@@ -116,6 +116,9 @@ export function LoginForm() {
                 case 'account_manager':
                     router.push('/account-manager')
                     break;
+                case 'moderator':
+                    router.push('/moderator')
+                    break;
                 default:
                     router.push('/client')
             }

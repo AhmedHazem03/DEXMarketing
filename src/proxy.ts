@@ -29,7 +29,7 @@ export async function proxy(request: NextRequest) {
     const protectedPrefixes = [
         '/admin', '/client', '/team-leader', '/account-manager',
         '/creator', '/editor', '/photographer', '/videographer',
-        '/accountant', '/profile', '/account', '/settings',
+        '/accountant', '/moderator', '/profile', '/account', '/settings',
     ];
     const isProtectedRoute = protectedPrefixes.some(prefix => logicalPath.startsWith(prefix));
 
