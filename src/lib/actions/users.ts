@@ -268,10 +268,16 @@ export async function updateUserAdmin(userId: string, updates: { name?: string; 
         }
     }
 
+    // Auto-resolve department when role changes
+    const finalUpdates: Record<string, unknown> = { ...updates }
+    if (updates.role !== undefined) {
+        finalUpdates.department = resolveDepartment(updates.role)
+    }
+
     const { data: updatedUser, error } = await supabase
         .from('users')
         // @ts-ignore
-        .update(updates)
+        .update(finalUpdates)
         .eq('id', userId)
         .select()
         .single()

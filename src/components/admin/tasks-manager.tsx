@@ -1,9 +1,9 @@
-'use client'
+﻿'use client'
 
 import { useState, useMemo, useCallback, memo, useEffect } from 'react'
 import Image from 'next/image'
 import { useTranslations, useLocale } from 'next-intl'
-import { useAdminTasks, useAdminTasksStats, useAdminTasksExport } from '@/hooks/use-tasks'
+import { useAdminTasks, useAdminTasksStats, useAdminTasksExport, useTaskDetails } from '@/hooks/use-tasks'
 import { useTasksRealtime } from '@/hooks/use-realtime'
 import { useDebounce } from '@/hooks'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -30,9 +30,25 @@ import {
     X,
     SlidersHorizontal,
     Building2,
-    FileSpreadsheet
+    FileSpreadsheet,
+    Eye,
+    User,
+    Clock,
+    MapPin,
+    Tag,
+    Layers,
+    MessageSquare,
+    Paperclip,
+    FolderOpen,
+    CalendarClock,
+    Hash,
+    AlertTriangle,
+    RefreshCw,
+    ExternalLink,
+    Star
 } from 'lucide-react'
 import { exportTasksToCSV, exportTasksToPDF, type TaskExportData } from '@/lib/export-utils'
+import { getFileIcon, formatFileSize } from '@/lib/file-utils'
 import { Badge } from '@/components/ui/badge'
 import {
     Dialog,
@@ -111,7 +127,7 @@ export function TasksManager() {
     // Debounce search to avoid excessive API calls
     const debouncedSearch = useDebounce(search, 400)
 
-    // Build filters object — only include non-default values
+    // Build filters object ΓÇö only include non-default values
     const filters = useMemo<TaskFilters>(() => ({
         search: debouncedSearch.length > 2 ? debouncedSearch : undefined,
         status: statusFilter === 'all' ? undefined : (statusFilter as any),
@@ -223,7 +239,7 @@ export function TasksManager() {
     return (
         <Card>
             <CardContent className="p-3 sm:p-4 md:p-6 space-y-4 md:space-y-6">
-                {/* Summary Stats — from lightweight stats query */}
+                {/* Summary Stats ΓÇö from lightweight stats query */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
                     <TaskStatCard value={stats?.total ?? 0} label={t('totalTasks')} colorClass="bg-blue-100 dark:bg-blue-500/20 text-blue-700" />
                     <TaskStatCard value={stats?.in_progress ?? 0} label={t('inProgress')} colorClass="bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700" />
@@ -554,15 +570,16 @@ export function TasksManager() {
                                         </TableCell>
                                         {/* Actions */}
                                         <TableCell className="text-center py-3">
-                                            {task.client_feedback ? (
-                                                <TaskFeedbackDialog
-                                                    feedback={task.client_feedback}
-                                                    taskTitle={task.title}
-                                                    variant="desktop"
-                                                />
-                                            ) : (
-                                                <span className="text-xs text-muted-foreground/40">—</span>
-                                            )}
+                                            <div className="flex items-center justify-center gap-1">
+                                                <TaskDetailDialog task={task} variant="desktop" />
+                                                {task.client_feedback && (
+                                                    <TaskFeedbackDialog
+                                                        feedback={task.client_feedback}
+                                                        taskTitle={task.title}
+                                                        variant="desktop"
+                                                    />
+                                                )}
+                                            </div>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -641,6 +658,300 @@ export function TasksManager() {
 // ============================================
 
 /**
+ * Body of the task detail dialog — fetches full data lazily including attachments
+ */
+function TaskDetailBody({ task }: { task: TaskWithRelations }) {
+    const t = useTranslations('tasksManager')
+    const locale = useLocale()
+    const clientName = task.client?.name || task.project?.client?.name || task.company_name
+    const { data: fullTask, isLoading: loadingDetails } = useTaskDetails(task.id)
+    const attachments = fullTask?.attachments ?? []
+
+    const formatDate = (d?: string | null) => {
+        if (!d) return null
+        try { return format(new Date(d), locale === 'ar' ? 'dd/MM/yyyy' : 'MMM d, yyyy') } catch { return d }
+    }
+    const formatDateTime = (d?: string | null) => {
+        if (!d) return null
+        try { return format(new Date(d), locale === 'ar' ? 'dd/MM/yyyy HH:mm' : 'MMM d, yyyy HH:mm') } catch { return d }
+    }
+
+    return (
+        <div className="flex flex-col h-full overflow-hidden">
+            {/* Colored header */}
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent px-5 py-4 border-b shrink-0">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <StatusBadge status={task.status} />
+                    <PriorityBadge priority={task.priority} />
+                    {task.department && <DepartmentBadge department={task.department} />}
+                </div>
+                <h2 className="font-semibold text-base leading-snug">{task.title}</h2>
+                {task.description && (
+                    <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
+                )}
+                {task.task_id && (
+                    <div className="flex items-center gap-1 mt-1.5 text-xs text-muted-foreground">
+                        <Hash className="h-3 w-3" />
+                        <span>{task.task_id}</span>
+                    </div>
+                )}
+            </div>
+
+            {/* Scrollable body */}
+            <div className="overflow-y-auto flex-1 p-5 space-y-5">
+
+                {/* People */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5" />{t('sectionPeople')}
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        {clientName && (
+                            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40">
+                                <Building2 className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <div className="min-w-0">
+                                    <div className="text-[11px] text-muted-foreground">{t('clientLabel')}</div>
+                                    <div className="text-sm font-medium truncate">{clientName}</div>
+                                </div>
+                            </div>
+                        )}
+                        {task.creator && (
+                            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40">
+                                <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <div className="min-w-0">
+                                    <div className="text-[11px] text-muted-foreground">{t('teamLeaderLabel')}</div>
+                                    <div className="text-sm font-medium truncate">{task.creator.name}</div>
+                                    {task.creator.email && <div className="text-[11px] text-muted-foreground truncate">{task.creator.email}</div>}
+                                </div>
+                            </div>
+                        )}
+                        {task.assigned_user && (
+                            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40">
+                                <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <div className="min-w-0">
+                                    <div className="text-[11px] text-muted-foreground">{t('designerLabel')}</div>
+                                    <div className="text-sm font-medium truncate">{task.assigned_user.name}</div>
+                                    {task.assigned_user.email && <div className="text-[11px] text-muted-foreground truncate">{task.assigned_user.email}</div>}
+                                </div>
+                            </div>
+                        )}
+                        {task.editor && (
+                            <div className="flex items-center gap-2 p-2.5 rounded-lg bg-muted/40">
+                                <User className="h-4 w-4 text-muted-foreground shrink-0" />
+                                <div className="min-w-0">
+                                    <div className="text-[11px] text-muted-foreground">{t('editor')}</div>
+                                    <div className="text-sm font-medium truncate">{typeof task.editor === 'string' ? task.editor : (task.editor as { name?: string })?.name || ''}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Task Info */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                        <Tag className="h-3.5 w-3.5" />{t('sectionTaskInfo')}
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        {task.task_type && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('typeLabel')}</div>
+                                <div className="text-sm font-medium">{task.task_type}</div>
+                            </div>
+                        )}
+                        {task.workflow_stage && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('workflowStage')}</div>
+                                <div className="text-sm font-medium">{task.workflow_stage}</div>
+                            </div>
+                        )}
+                        {task.request_type && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('requestType')}</div>
+                                <div className="text-sm font-medium">{task.request_type}</div>
+                            </div>
+                        )}
+                        {task.request_status && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('requestStatus')}</div>
+                                <div className="text-sm font-medium">{task.request_status}</div>
+                            </div>
+                        )}
+                        {task.project?.name && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('project')}</div>
+                                <div className="text-sm font-medium">{task.project.name}</div>
+                            </div>
+                        )}
+                        <div className="p-2.5 rounded-lg bg-muted/40">
+                            <div className="text-[11px] text-muted-foreground flex items-center gap-1"><MessageSquare className="h-3 w-3" />{t('commentsCount')}</div>
+                            <div className="text-sm font-medium">{task.comments_count ?? 0}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Dates */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                        <Clock className="h-3.5 w-3.5" />{t('sectionDates')}
+                    </h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div className="p-2.5 rounded-lg bg-muted/40">
+                            <div className="text-[11px] text-muted-foreground">{t('createdAt')}</div>
+                            <div className="text-sm font-medium">{formatDate(task.created_at)}</div>
+                        </div>
+                        {task.updated_at && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('updatedAt')}</div>
+                                <div className="text-sm font-medium">{formatDate(task.updated_at)}</div>
+                            </div>
+                        )}
+                        {task.deadline && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('deadline')}</div>
+                                <div className="text-sm font-medium">{formatDate(task.deadline)}</div>
+                            </div>
+                        )}
+                        {task.scheduled_date && (
+                            <div className="p-2.5 rounded-lg bg-muted/40">
+                                <div className="text-[11px] text-muted-foreground">{t('scheduledDate')}</div>
+                                <div className="text-sm font-medium">{formatDateTime(task.scheduled_date)}</div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Location */}
+                {task.location && (
+                    <div className="space-y-2">
+                        <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                            <MapPin className="h-3.5 w-3.5" />{t('location')}
+                        </h3>
+                        <div className="p-2.5 rounded-lg bg-muted/40 text-sm">{task.location}</div>
+                    </div>
+                )}
+
+                {/* Attachments */}
+                <div className="space-y-2">
+                    <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                        <Paperclip className="h-3.5 w-3.5" />{t('sectionAttachments')}
+                        {!loadingDetails && <span className="text-xs normal-case font-normal">({attachments.length})</span>}
+                    </h3>
+                    {loadingDetails ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground p-3">
+                            <Loader2 className="h-4 w-4 animate-spin" />
+                            {t('loadingAttachments')}
+                        </div>
+                    ) : attachments.length === 0 ? (
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground p-3">
+                            <FolderOpen className="h-4 w-4" />
+                            {t('noAttachments')}
+                        </div>
+                    ) : (
+                        <div className="space-y-2">
+                            {attachments.map((attachment) => {
+                                const FileIcon = getFileIcon(attachment.file_type)
+                                return (
+                                    <div
+                                        key={attachment.id}
+                                        className={cn(
+                                            'flex items-center gap-3 p-3 rounded-lg border bg-card/50',
+                                            attachment.is_final && 'border-green-500/50 bg-green-500/5'
+                                        )}
+                                    >
+                                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                                            <FileIcon className="h-5 w-5 text-primary" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-medium text-sm truncate">{attachment.file_name}</span>
+                                                {attachment.is_final && (
+                                                    <Badge variant="secondary" className="text-green-600 bg-green-500/10 shrink-0 text-[10px]">
+                                                        <Star className="h-3 w-3 me-1" />
+                                                        {locale === 'ar' ? 'نهائي' : 'Final'}
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                            <span className="text-xs text-muted-foreground">{formatFileSize(attachment.file_size)}</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                                <a href={attachment.file_url} target="_blank" rel="noopener noreferrer" aria-label="Open file">
+                                                    <ExternalLink className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                            <Button variant="ghost" size="icon" className="h-8 w-8" asChild>
+                                                <a href={attachment.file_url} download aria-label="Download file">
+                                                    <Download className="h-4 w-4" />
+                                                </a>
+                                            </Button>
+                                        </div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                    )}
+                </div>
+
+                {/* Rejection Reason */}
+                {task.rejection_reason && (
+                    <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-destructive mb-1">
+                            <AlertTriangle className="h-3.5 w-3.5" />{t('rejectionReason')}
+                        </div>
+                        <p className="text-sm text-destructive/80">{task.rejection_reason}</p>
+                    </div>
+                )}
+
+                {/* Client Feedback */}
+                {task.client_feedback && (
+                    <div className="p-3 rounded-lg bg-orange-500/5 border border-orange-500/20">
+                        <div className="flex items-center gap-1.5 text-xs font-semibold text-orange-600 mb-1">
+                            <MessageSquare className="h-3.5 w-3.5" />{t('feedbackTitle')}
+                        </div>
+                        <p className="text-sm text-orange-700 dark:text-orange-300">{task.client_feedback}</p>
+                    </div>
+                )}
+
+            </div>
+        </div>
+    )
+}
+
+/**
+ * Controlled dialog that lazy-loads task details only when opened
+ */
+const TaskDetailDialog = memo(function TaskDetailDialog({
+    task,
+    variant = 'desktop'
+}: {
+    task: TaskWithRelations
+    variant?: 'desktop' | 'mobile'
+}) {
+    const [open, setOpen] = useState(false)
+    const t = useTranslations('tasksManager')
+    return (
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+                {variant === 'desktop' ? (
+                    <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-primary hover:bg-primary/5" title={t('viewDetails')}>
+                        <Eye className="w-4 h-4" />
+                    </Button>
+                ) : (
+                    <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-primary px-2">
+                        <Eye className="w-3.5 h-3.5" />
+                    </Button>
+                )}
+            </DialogTrigger>
+            <DialogContent className="max-w-[94vw] sm:max-w-2xl p-0 overflow-hidden flex flex-col max-h-[90vh]">
+                <DialogTitle className="sr-only">{task.title}</DialogTitle>
+                {open && <TaskDetailBody task={task} />}
+            </DialogContent>
+        </Dialog>
+    )
+})
+
+/**
  * Reusable dialog for displaying client feedback
  */
 const TaskFeedbackDialog = memo(function TaskFeedbackDialog({
@@ -709,7 +1020,7 @@ const TaskStatCard = memo(function TaskStatCard({
 })
 
 // ============================================
-// Mobile Task Card — React.memo to prevent unnecessary re-renders
+// Mobile Task Card ΓÇö React.memo to prevent unnecessary re-renders
 // ============================================
 
 const MobileTaskCard = memo(function MobileTaskCard({ task }: { task: TaskWithRelations }) {
@@ -755,7 +1066,7 @@ const MobileTaskCard = memo(function MobileTaskCard({ task }: { task: TaskWithRe
                 </div>
             </div>
 
-            {/* Footer: Creator + Feedback */}
+            {/* Footer: Creator + Actions */}
             <div className="flex items-center justify-between pt-1.5 border-t">
                 <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     {task.creator?.avatar_url && (
@@ -763,13 +1074,16 @@ const MobileTaskCard = memo(function MobileTaskCard({ task }: { task: TaskWithRe
                     )}
                     <span>{task.creator?.name || 'System'}</span>
                 </div>
-                {task.client_feedback && (
-                    <TaskFeedbackDialog
-                        feedback={task.client_feedback}
-                        taskTitle={task.title}
-                        variant="mobile"
-                    />
-                )}
+                <div className="flex items-center gap-1">
+                    <TaskDetailDialog task={task} variant="mobile" />
+                    {task.client_feedback && (
+                        <TaskFeedbackDialog
+                            feedback={task.client_feedback}
+                            taskTitle={task.title}
+                            variant="mobile"
+                        />
+                    )}
+                </div>
             </div>
         </div>
     )

@@ -1,12 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useLocale } from 'next-intl'
 import { format } from 'date-fns'
 import { ar, enUS } from 'date-fns/locale'
 import {
     Calendar as CalendarIcon, Plus, Building2, Loader2,
-    Edit2, CheckCircle2, Users, AlertTriangle, X, Bug
+    Edit2, CheckCircle2, Users, AlertTriangle, X, Bug, ChevronsUpDown, Search
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -17,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import {
     Select, SelectContent, SelectItem, SelectTrigger, SelectValue
 } from '@/components/ui/select'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { EmojiTextarea } from '@/components/ui/emoji-textarea'
 import { LinksInput } from '@/components/ui/links-input'
@@ -68,13 +69,22 @@ export function ScheduleForm({ teamLeaderId, initialDate, schedule, isLoading, o
     const [notes, setNotes] = useState(schedule?.notes || '')
     const [status, setStatus] = useState<ScheduleStatus>(schedule?.status || 'scheduled')
     const [clientId, setClientId] = useState(schedule?.client_id || defaultClientId || 'no-client')
-    const [department, setDepartment] = useState<Department>(schedule?.department || (currentUser?.department || 'photography'))
+    const [department, setDepartment] = useState<Department>(schedule?.department || currentUser?.department || 'photography')
     const [assignedMembers, setAssignedMembers] = useState<string[]>(schedule?.assigned_members || [])
+
+    // Sync department when currentUser loads (useState initial value runs before the hook resolves)
+    useEffect(() => {
+        if (!schedule?.department && currentUser?.department) {
+            setDepartment(currentUser.department)
+        }
+    }, [currentUser?.department, schedule?.department])
     const [scheduleType, setScheduleType] = useState<ScheduleType>(schedule?.schedule_type || 'post')
     const [missingItems, setMissingItems] = useState(schedule?.missing_items || '')
     const [missingItemsStatus, setMissingItemsStatus] = useState<MissingItemsStatus>(schedule?.missing_items_status || 'not_applicable')
     const [links, setLinks] = useState<ScheduleLink[]>(schedule?.links || [])
     const [images, setImages] = useState<string[]>(schedule?.images || [])
+    const [clientOpen, setClientOpen] = useState(false)
+    const [clientSearch, setClientSearch] = useState('')
 
     // Simplified form: hide endTime & team members (for content department)
     const isSimplified = simplifiedForm || userRole === 'creator' || currentUser?.role === 'creator'
@@ -201,84 +211,140 @@ export function ScheduleForm({ teamLeaderId, initialDate, schedule, isLoading, o
                             </span>
                         )}
                     </Label>
-                    <Select value={clientId} onValueChange={setClientId}>
-                        <SelectTrigger className="rounded-xl">
-                            <SelectValue placeholder={isAr ? 'اختر العميل (اختياري)' : 'Select client (optional)'} />
-                        </SelectTrigger>
-                        <SelectContent className="max-h-[300px]">
-                            {/* No Client Option */}
-                            <SelectItem value="no-client">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-8 h-8 rounded-lg bg-muted/50 flex items-center justify-center">
-                                        <X className="h-4 w-4 text-muted-foreground" />
-                                    </div>
-                                    <div>
-                                        <div className="font-medium text-sm">
-                                            {isAr ? 'بدون عميل' : 'No Client'}
+                    <Popover open={clientOpen} onOpenChange={(open) => { setClientOpen(open); if (!open) setClientSearch('') }}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={clientOpen}
+                                className="w-full rounded-xl justify-between font-normal h-10 px-3"
+                            >
+                                {clientId && clientId !== 'no-client'
+                                    ? (() => {
+                                        const c = clients?.find(x => x.id === clientId)
+                                        return c ? (
+                                            <span className="flex items-center gap-2 min-w-0">
+                                                <Avatar className="h-5 w-5 shrink-0">
+                                                    <AvatarFallback className="text-[10px] font-bold bg-primary/10">
+                                                        {c.name?.charAt(0)?.toUpperCase() || '?'}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <span className="truncate text-sm">{c.name}</span>
+                                                {!!c.user_id && <span className="text-emerald-500 text-xs shrink-0">✓</span>}
+                                            </span>
+                                        ) : <span className="text-muted-foreground text-sm">{isAr ? 'اختر العميل' : 'Select client'}</span>
+                                    })()
+                                    : <span className="text-muted-foreground text-sm">{isAr ? 'اختر العميل (اختياري)' : 'Select client (optional)'}</span>
+                                }
+                                <ChevronsUpDown className="h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0 rounded-xl" align="start">
+                            {/* Search Input */}
+                            <div className="flex items-center border-b px-3">
+                                <Search className="h-4 w-4 shrink-0 text-muted-foreground me-2" />
+                                <input
+                                    value={clientSearch}
+                                    onChange={(e) => setClientSearch(e.target.value)}
+                                    placeholder={isAr ? 'ابحث عن عميل...' : 'Search client...'}
+                                    className="flex h-9 w-full bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground"
+                                    autoFocus
+                                />
+                            </div>
+                            {/* Client List */}
+                            <div className="max-h-[260px] overflow-y-auto p-1">
+                                {/* No Client Option */}
+                                {(!clientSearch.trim() || (isAr ? 'بدون عميل' : 'no client').includes(clientSearch.toLowerCase())) && (
+                                    <button
+                                        type="button"
+                                        onClick={() => { setClientId('no-client'); setClientOpen(false); setClientSearch('') }}
+                                        className="flex items-center gap-2.5 w-full rounded-sm px-2 py-2 text-left hover:bg-accent hover:text-accent-foreground cursor-pointer"
+                                    >
+                                        <div className="w-7 h-7 rounded-lg bg-muted/50 flex items-center justify-center shrink-0">
+                                            <X className="h-3.5 w-3.5 text-muted-foreground" />
                                         </div>
-                                        <div className="text-[10px] text-muted-foreground">
-                                            {isAr ? 'مهمة عامة' : 'General task'}
+                                        <div>
+                                            <div className="font-medium text-sm">{isAr ? 'بدون عميل' : 'No Client'}</div>
+                                            <div className="text-[10px] text-muted-foreground">{isAr ? 'مهمة عامة' : 'General task'}</div>
                                         </div>
-                                    </div>
-                                </div>
-                            </SelectItem>
-                            
-                            {clients && clients.length > 0 ? (
-                                <>
-                                    <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-t mt-1 pt-2">
-                                        {isAr ? 'العملاء المتاحين' : 'Available Clients'}
-                                    </div>
-                                    {clients.map(client => {
-                                        const hasUserAccount = !!client.user_id
-                                        return (
-                                            <SelectItem key={client.id} value={client.id}>
-                                                <div className="flex items-center gap-2.5 py-1">
-                                                    <Avatar className="h-8 w-8 border border-border/50">
-                                                        <AvatarFallback className="text-xs font-bold bg-gradient-to-br from-primary/20 to-primary/5">
-                                                            {client.name?.charAt(0)?.toUpperCase() || '?'}
-                                                        </AvatarFallback>
-                                                    </Avatar>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="flex items-center gap-1.5">
-                                                            <span className="font-medium text-sm truncate">
-                                                                {client.name}
-                                                            </span>
-                                                            {hasUserAccount && (
-                                                                <span className="text-emerald-500" title={isAr ? 'لديه حساب - يمكنه الدخول' : 'Has account - Can login'}>
-                                                                    ✓
-                                                                </span>
-                                                            )}
-                                                        </div>
-                                                        <div className="text-[10px] text-muted-foreground truncate">
-                                                            {hasUserAccount 
-                                                                ? (client.email || (client.phone ? `📱 ${client.phone}` : (isAr ? 'لديه حساب' : 'Has account')))
-                                                                : (isAr ? '⚠️ بدون حساب - لن يرى الجدولة' : '⚠️ No account - Won\'t see schedule')}
-                                                        </div>
+                                    </button>
+                                )}
+
+                                {clients && clients.length > 0 ? (
+                                    <>
+                                        <div className="px-2 py-1.5 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                                            {isAr ? 'العملاء المتاحين' : 'Available Clients'}
+                                        </div>
+                                        {(() => {
+                                            const q = clientSearch.trim().toLowerCase()
+                                            const filtered = q
+                                                ? clients.filter(c => c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.phone?.includes(q))
+                                                : clients
+                                            if (filtered.length === 0) {
+                                                return (
+                                                    <div className="py-4 text-center">
+                                                        <Search className="h-5 w-5 mx-auto mb-1 text-muted-foreground/40" />
+                                                        <p className="text-xs text-muted-foreground">
+                                                            {isAr ? 'لا يوجد عميل بهذا الاسم' : 'No client found'}
+                                                        </p>
                                                     </div>
-                                                </div>
-                                            </SelectItem>
-                                        )
-                                    })}
-                                </>
-                            ) : (
-                                <div className="px-3 py-6 text-center">
-                                    <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-2">
-                                        <Users className="h-6 w-6 text-muted-foreground/30" />
-                                    </div>
-                                    <p className="text-xs text-muted-foreground mb-1 font-medium">
-                                        {isTeamMember
-                                            ? (isAr ? 'لا يوجد عملاء معيّنين لك' : 'No clients assigned to you')
-                                            : (isAr ? 'لا يوجد عملاء' : 'No clients yet')}
-                                    </p>
-                                    <p className="text-[10px] text-muted-foreground/60">
+                                                )
+                                            }
+                                            return filtered.map(client => {
+                                                const hasUserAccount = !!client.user_id
+                                                return (
+                                                    <button
+                                                        type="button"
+                                                        key={client.id}
+                                                        onClick={() => { setClientId(client.id); setClientOpen(false); setClientSearch('') }}
+                                                        className={cn(
+                                                            "flex items-center gap-2.5 w-full rounded-sm px-2 py-2 text-left hover:bg-accent hover:text-accent-foreground cursor-pointer",
+                                                            clientId === client.id && "bg-accent"
+                                                        )}
+                                                    >
+                                                        <Avatar className="h-7 w-7 border border-border/50 shrink-0">
+                                                            <AvatarFallback className="text-xs font-bold bg-gradient-to-br from-primary/20 to-primary/5">
+                                                                {client.name?.charAt(0)?.toUpperCase() || '?'}
+                                                            </AvatarFallback>
+                                                        </Avatar>
+                                                        <div className="flex-1 min-w-0">
+                                                            <div className="flex items-center gap-1.5">
+                                                                <span className="font-medium text-sm truncate">{client.name}</span>
+                                                                {hasUserAccount && (
+                                                                    <span className="text-emerald-500 text-xs" title={isAr ? 'لديه حساب' : 'Has account'}>✓</span>
+                                                                )}
+                                                            </div>
+                                                            <div className="text-[10px] text-muted-foreground truncate">
+                                                                {hasUserAccount
+                                                                    ? (client.email || (client.phone ? `📱 ${client.phone}` : (isAr ? 'لديه حساب' : 'Has account')))
+                                                                    : (isAr ? '⚠️ بدون حساب' : '⚠️ No account')}
+                                                            </div>
+                                                        </div>
+                                                    </button>
+                                                )
+                                            })
+                                        })()}
+                                    </>
+                                ) : (
+                                    <div className="px-3 py-6 text-center">
+                                        <div className="w-12 h-12 rounded-xl bg-muted/30 flex items-center justify-center mx-auto mb-2">
+                                            <Users className="h-6 w-6 text-muted-foreground/30" />
+                                        </div>
+                                        <p className="text-xs text-muted-foreground mb-1 font-medium">
+                                            {isTeamMember
+                                                ? (isAr ? 'لا يوجد عملاء معيّنين لك' : 'No clients assigned to you')
+                                                : (isAr ? 'لا يوجد عملاء' : 'No clients yet')}
+                                        </p>
+                                        <p className="text-[10px] text-muted-foreground/60">
                                         {isTeamMember
                                             ? (isAr ? 'تواصل مع قائد الفريق لتعيين عملاء لك' : 'Contact your team leader to assign clients')
                                             : (isAr ? 'قم بإضافة عميل جديد أولاً' : 'Add a new client first')}
-                                    </p>
-                                </div>
-                            )}
-                        </SelectContent>
-                    </Select>
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                     {/* Warning if client has no account */}
                     {clientId && clientId !== 'no-client' && clients?.find(c => c.id === clientId && !c.user_id) && (
                         <div className="flex items-start gap-2 px-3 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30">

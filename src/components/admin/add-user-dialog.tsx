@@ -28,10 +28,8 @@ function createFormSchema(t: ReturnType<typeof useTranslations<'addUser'>>) {
         role: z.enum(['admin', 'accountant', 'team_leader', 'account_manager', 'creator', 'designer', 'client', 'videographer', 'editor', 'photographer']),
         department: z.enum(['photography', 'content']).nullable().optional(),
     }).superRefine((data, ctx) => {
-        if (
-            DEPARTMENT_REQUIRED_ROLES.includes(data.role as any) &&
-            !data.department
-        ) {
+        // Only team_leader picks a department manually; all other roles are auto-assigned
+        if (data.role === 'team_leader' && !data.department) {
             ctx.addIssue({
                 code: z.ZodIssueCode.custom,
                 message: t('departmentRequired'),
@@ -47,6 +45,15 @@ export function AddUserDialog() {
     const [isLoading, setIsLoading] = useState(false)
     const queryClient = useQueryClient()
     const formSchema = createFormSchema(t)
+
+    const handleOpenChange = (value: boolean) => {
+        if (!value && isLoading) return // منع الإغلاق أثناء التحميل
+        if (!value) {
+            form.reset()
+            setIsLoading(false)
+        }
+        setOpen(value)
+    }
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -80,9 +87,9 @@ export function AddUserDialog() {
             const res = await createUser({ ...values, department: department ?? undefined })
             if (res.success) {
                 toast.success(t('success'))
-                setOpen(false)
-                form.reset()
                 queryClient.invalidateQueries({ queryKey: ['users'] })
+                form.reset()
+                setOpen(false)
             } else {
                 toast.error(res.error || t('error'))
             }
@@ -94,7 +101,7 @@ export function AddUserDialog() {
     }
 
     return (
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={handleOpenChange}>
             <DialogTrigger asChild>
                 <Button>
                     <UserPlus className="h-4 w-4 me-2" />
