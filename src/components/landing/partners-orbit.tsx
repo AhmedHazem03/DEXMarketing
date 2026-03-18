@@ -7,24 +7,54 @@ import { useLocale } from 'next-intl'
 const GOLD = '#fbbf24'
 
 const PARTNERS = [
-  { name: 'الفانوس',           logo: '/first%2020/1.png',           color: GOLD },
-  { name: 'Inscription Dev',   logo: '/first%2020/2.png',           color: GOLD },
-  { name: 'CUBE Design',       logo: '/first%2020/3.png',           color: GOLD },
-  { name: 'بورسعيد',           logo: '/first%2020/4.png',           color: GOLD },
-  { name: 'نقابة المحامين',     logo: '/first%2020/5.png',           color: GOLD },
-  { name: 'Happy King',        logo: '/first%2020/6.png',           color: GOLD },
-  { name: 'Friends',           logo: '/first%2020/8.png',           color: GOLD },
-  { name: 'TM',                logo: '/first%2020/10.png',          color: GOLD },
-  { name: 'كبدة القلة',         logo: '/first%2020/11.png',          color: GOLD },
-  { name: "Let's Go",          logo: '/first%2020/12.png',          color: GOLD },
-  { name: 'طيارة',              logo: '/first%2020/13%20%282%29.png',   color: GOLD },
-  { name: 'مشارق',              logo: '/first%2020/14%20%282%29.png',   color: GOLD },
-  { name: 'No Name Fashion',   logo: '/first%2020/15%20%282%29.png',   color: GOLD },
-  { name: 'R Burger',          logo: '/first%2020/15.png',              color: GOLD },
-  { name: 'الأهرام تكنولوجي',   logo: '/first%2020/16%20%282%29.png',   color: GOLD },
-  { name: 'خلدون',              logo: '/first%2020/17%20%282%29.png',   color: GOLD },
-  { name: 'علوي',               logo: '/first%2020/18%20%283%29.png',   color: GOLD },
-  { name: 'Magic Square',      logo: '/first%2020/18.png',              color: GOLD },
+  { name: 'كبدة الفلاح',          logo: '/first%2020/1%20%D9%83%D8%A8%D8%AF%D8%A9%20%D8%A7%D9%84%D9%81%D9%84%D8%A7%D8%AD.png',                   color: GOLD },
+  { name: 'مطعم خلدون',           logo: '/first%2020/2%20%D9%85%D8%B7%D8%B9%D9%85%20%D8%AE%D9%84%D8%AF%D9%88%D9%86.png',                    color: GOLD },
+  { name: 'حلواني علوان',          logo: '/first%2020/3%20%D8%AD%D9%84%D9%88%D8%A7%D9%86%D9%8A%20%D8%B9%D9%84%D9%88%D8%A7%D9%86.png',                  color: GOLD },
+  { name: 'فكري للبصريات',         logo: '/first%2020/4%20%D9%81%D9%83%D8%B1%D9%8A%20%D9%84%D9%84%D8%A8%D8%B5%D8%B1%D9%8A%D8%A7%D8%AA.png',                 color: GOLD },
+  { name: 'ماجيك سكوير',           logo: '/first%2020/5%20%D9%85%D8%A7%D8%AC%D9%8A%D9%83%20%D8%B3%D9%83%D9%88%D9%8A%D8%B1.png',                   color: GOLD },
+  { name: 'مطعم فريندز',           logo: '/first%2020/6%20%D9%85%D8%B7%D8%B9%D9%85%20%D9%81%D8%B1%D9%8A%D9%86%D8%AF%D8%B2.png',                   color: GOLD },
+  { name: 'كافيه ليتس جو',         logo: '/first%2020/8%20%D9%83%D8%A7%D9%81%D9%8A%D9%87%20%D9%84%D9%8A%D8%AA%D8%B3%20%D8%AC%D9%88.png',                 color: GOLD },
+  { name: 'شركة منار التيسير',      logo: '/first%2020/10%20%D8%B4%D8%B1%D9%83%D8%A9%20%D9%85%D9%86%D8%A7%D8%B1%20%D8%A7%D9%84%D8%AA%D9%8A%D8%B3%D9%8A%D8%B1.png',             color: GOLD },
+  { name: 'الفانوس',               logo: '/first%2020/11%20%D8%A7%D9%84%D9%81%D8%A7%D9%86%D9%88%D8%B3.png',                      color: GOLD },
+  { name: 'انسكريبشن',             logo: '/first%2020/12%20%D8%B4%D8%B1%D9%83%D8%A9%20%D8%A7%D9%86%D8%B3%D9%83%D8%B1%D9%8A%D8%A8%D8%B4%D9%86.png',               color: GOLD },
+  { name: 'نقابة المحامين بسوهاج', logo: '/first%2020/13%20%D9%86%D9%82%D8%A7%D8%A8%D8%A9%20%D8%A7%D9%84%D9%85%D8%AD%D8%A7%D9%85%D9%8A%D9%86%20%D8%A8%D8%B3%D9%88%D9%87%D8%A7%D8%AC.png',         color: GOLD },
+  { name: 'مطعم بورسعيد',          logo: '/first%2020/14%D9%85%D8%B7%D8%B9%D9%85%20%D8%A8%D9%88%D8%B1%D8%B3%D8%B9%D9%8A%D8%AF.png',                  color: GOLD },
+  { name: 'مطعم ريبابلك',          logo: '/first%2020/15%20%D9%85%D8%B7%D8%B9%D9%85%20%D8%B1%D9%8A%D8%A8%D8%A7%D8%A8%D9%84%D9%83.png',                 color: GOLD },
+  { name: 'الحديدي جروب',          logo: '/first%2020/16%20%D8%A7%D9%84%D8%AD%D8%AF%D9%8A%D8%AF%D9%8A%20%D8%AC%D8%B1%D9%88%D8%A8.png',                 color: GOLD },
+  { name: 'أحمد حلمي الشريف',      logo: '/first%2020/17%20%D8%A7%D9%84%D9%86%D8%A7%D8%A6%D8%A8%20%D8%A7%D8%AD%D9%85%D8%AF%20%D8%AD%D9%84%D9%85%D9%8A%20%D8%A7%D9%84%D8%B4%D8%B1%D9%8A%D9%81.png',      color: GOLD },
+  { name: 'مول طنطاوي',            logo: '/first%2020/18%20%D9%85%D9%88%D9%84%20%D8%B7%D9%86%D8%B7%D8%A7%D9%88%D9%8A.png',                   color: GOLD },
+  { name: 'محطة موبيل الكوامل',    logo: '/logoooos%20png/19%20%D9%85%D8%AD%D8%B7%D8%A9%20%D9%85%D9%88%D8%A8%D9%8A%D9%84%20%D8%A7%D9%84%D9%83%D9%88%D8%A7%D9%85%D9%84.png', color: GOLD },
+  { name: 'عطارة صبري كمون',       logo: '/logoooos%20png/20%20%D8%B9%D8%B7%D8%A7%D8%B1%D8%A9%20%D8%B5%D8%A8%D8%B1%D9%8A%20%D9%83%D9%85%D9%88%D9%86.png',               color: GOLD },
+  { name: 'NO NAME',               logo: '/logoooos%20png/21%20NO%20NAME.png',                                                                                            color: GOLD },
+  { name: 'شركة كيوب',             logo: '/logoooos%20png/22%20%D8%B4%D8%B1%D9%83%D8%A9%20%D9%83%D9%8A%D9%88%D8%A8.png',                                                 color: GOLD },
+  { name: 'مطعم وصاية',            logo: '/logoooos%20png/23%D9%85%D8%B7%D8%B9%D9%85%20%D9%88%D8%B5%D8%A7%D9%8A%D8%A9%20(%D8%A7%D9%8415).png',                          color: GOLD },
+  { name: 'كلو بلبن',              logo: '/logoooos%20png/24%20%D9%83%D9%84%D9%88%20%D8%A8%D9%84%D8%A8%D9%86.png',                                                        color: GOLD },
+  { name: 'كافيه اليكس',           logo: '/logoooos%20png/25%20%D9%83%D8%A7%D9%81%D9%8A%D9%87%20%D8%A7%D9%84%D9%8A%D9%83%D8%B3.png',                                     color: GOLD },
+  { name: 'فن تايم كيدز',          logo: '/logoooos%20png/26%20%D9%81%D9%86%20%D8%AA%D8%A7%D9%8A%D9%85%20%D9%83%D9%8A%D8%AF%D8%B2.png',                                  color: GOLD },
+  { name: 'فيستيا',                logo: '/logoooos%20png/27%20%D9%81%D9%8A%D8%B3%D8%AA%D9%8A%D8%A7.png',                                                                 color: GOLD },
+  { name: 'مجوهرات كنوز',          logo: '/logoooos%20png/28%20%D9%85%D8%AC%D9%88%D9%87%D8%B1%D8%A7%D8%AA%20%D9%83%D9%86%D9%88%D8%B2.png',                               color: GOLD },
+  { name: 'مطعم طيارة',            logo: '/logoooos%20png/29%20%D9%85%D8%B7%D8%B9%D9%85%20%D8%B7%D9%8A%D8%A7%D8%B1%D8%A9.png',                                           color: GOLD },
+  { name: 'القلاية فرايد تشيكن',   logo: '/logoooos%20png/30%20%D8%A7%D9%84%D9%82%D9%84%D8%A7%D9%8A%D8%A9%20%D9%81%D8%B1%D8%A7%D9%8A%D8%AF%20%D8%AA%D8%B4%D9%8A%D9%83%D9%86.png', color: GOLD },
+  { name: 'كلاش فرايد تشيكن',      logo: '/logoooos%20png/31%20%D9%83%D9%84%D8%A7%D8%B4%20%D9%81%D8%B1%D8%A7%D9%8A%D8%AF%20%D8%AA%D8%B4%D9%8A%D9%83%D9%86.png',          color: GOLD },
+  { name: 'مدرسة الأهرام',          logo: '/logoooos%20png/32%20%D9%85%D8%AF%D8%B1%D8%B3%D8%A9%20%D8%A7%D9%84%D8%A7%D9%87%D8%B1%D8%A7%D9%85.png',                         color: GOLD },
+  { name: 'موف كار',                logo: '/logoooos%20png/33%20%D9%85%D9%88%D9%81%20%D9%83%D8%A7%D8%B1.png',                                                              color: GOLD },
+  { name: 'كافيه فايبس',            logo: '/logoooos%20png/34%20%D9%83%D8%A7%D9%81%D9%8A%D9%87%20%D9%81%D8%A7%D9%8A%D8%A8%D8%B3.png',                                    color: GOLD },
+  { name: 'كوك فرايد تشيكن',        logo: '/logoooos%20png/35%20%D9%83%D9%88%D9%83%20%D9%81%D8%B1%D8%A7%D9%8A%D8%AF%20%D8%AA%D8%B4%D9%8A%D9%83%D9%86.png',               color: GOLD },
+  { name: 'صالون الكينج',            logo: '/logoooos%20png/36%20%D8%B5%D8%A7%D9%84%D9%88%D9%86%20%D8%A7%D9%84%D9%83%D9%8A%D9%86%D8%AC.png',                              color: GOLD },
+  { name: 'ديم للبصريات',            logo: '/logoooos%20png/37%20%D8%AF%D9%8A%D9%85%20%D9%84%D9%84%D8%A8%D8%B5%D8%B1%D9%8A%D8%A7%D8%AA.png',                              color: GOLD },
+  { name: 'كيموز جانجل',             logo: '/logoooos%20png/38%20%D9%83%D9%8A%D9%85%D9%88%D8%B2%20%D8%AC%D8%A7%D9%86%D8%AC%D9%84.png',                                    color: GOLD },
+  { name: 'AK MOTORS',               logo: '/logoooos%20png/39%20AK%20MOTORS.png',                                                                                         color: GOLD },
+  { name: 'لمبة ونجفة',              logo: '/logoooos%20png/40%20%D9%84%D9%85%D8%A8%D9%87%20%D9%88%D9%86%D8%AC%D9%81%D9%87.png',                                           color: GOLD },
+  { name: 'الصغير للعقارات',         logo: '/logoooos%20png/41%20%D8%A7%D9%84%D8%B5%D8%BA%D9%8A%D8%B1%20%D9%84%D9%84%D8%B9%D9%82%D8%A7%D8%B1%D8%A7%D8%AA.png',            color: GOLD },
+  { name: 'ريتش هوم',                logo: '/logoooos%20png/42%20%D8%B1%D9%8A%D8%AA%D8%B4%20%D9%87%D9%88%D9%85%20%D9%84%D9%84%D9%85%D8%B1%D8%A7%D8%AA%D8%A8.png',         color: GOLD },
+  { name: 'مدارس مودرن',             logo: '/logoooos%20png/43%20%D9%85%D8%AF%D8%A7%D8%B1%D8%B3%20%D9%85%D9%88%D8%AF%D8%B1%D9%86.png',                                    color: GOLD },
+  { name: 'صيدلية السلامة',          logo: '/logoooos%20png/44%20%D8%B5%D9%8A%D8%AF%D9%84%D9%8A%D8%A9%20%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%D8%A9.png',                  color: GOLD },
+  { name: 'ثري تك',                  logo: '/logoooos%20png/45%20%D8%AB%D8%B1%D9%8A%20%D8%AA%D9%83%20%D9%85%D9%88%D9%84.png',                                              color: GOLD },
+  { name: 'شركة لاين',               logo: '/logoooos%20png/46%20%D8%B4%D8%B1%D9%83%D8%A9%20%D9%84%D8%A7%D9%8A%D9%86.png',                                                 color: GOLD },
+  { name: 'فطارك عشاك',              logo: '/logoooos%20png/47%20%D9%81%D8%B7%D8%A7%D8%B1%D9%83%20%D8%B9%D8%B4%D8%A7%D9%83.png',                                           color: GOLD },
+  { name: 'WAVE SHOES',               logo: '/logoooos%20png/48%20WAVE%20SHOES.png',                                                                                        color: GOLD },
+  { name: 'حميدو ستور',              logo: '/logoooos%20png/49%20%D8%AD%D9%85%D9%8A%D8%AF%D9%88%20%D8%B3%D8%AA%D9%88%D8%B1.png',                                           color: GOLD },
+  { name: 'توكيل ارشيا',             logo: '/logoooos%20png/50%20%D8%AA%D9%88%D9%83%D9%8A%D9%84%20%D8%A7%D8%B1%D8%B4%D9%8A%D8%A7.png',                                    color: GOLD },
 ]
 
 type Partner = { name: string; logo: string; color: string }
@@ -134,6 +164,19 @@ function PartnerCard({
           />
         </div>
       </div>
+      {/* partner name */}
+      <span
+        className="text-center text-xs font-semibold leading-tight"
+        style={{
+          color:      hovered ? partner.color : 'rgba(255,255,255,0.55)',
+          transition: 'color 0.35s',
+          direction:  'rtl',
+          maxWidth:   140,
+          whiteSpace: 'normal',
+        }}
+      >
+        {partner.name}
+      </span>
     </div>
   )
 }
