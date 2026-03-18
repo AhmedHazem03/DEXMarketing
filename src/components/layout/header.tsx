@@ -22,7 +22,7 @@ import { MobileSidebar } from '@/components/layout/mobile-sidebar'
 import type { Department } from '@/types/database'
 import { useLogout } from '@/hooks/use-logout'
 
-export function Header({ user, role, department }: { user?: any, role?: string, department?: Department | null }) {
+export function Header({ user, role, department, avatarUrl }: { user?: any, role?: string, department?: Department | null, avatarUrl?: string }) {
     const locale = useLocale()
     const isAr = locale === 'ar'
     const router = useRouter()
@@ -72,7 +72,7 @@ export function Header({ user, role, department }: { user?: any, role?: string, 
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                                 <Avatar className="h-8 w-8">
-                                    <AvatarImage src={user?.user_metadata?.avatar_url || ''} alt={user?.email || ''} />
+                                    <AvatarImage src={avatarUrl || ''} alt={user?.email || ''} />
                                     <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                                 </Avatar>
                             </Button>
@@ -93,7 +93,7 @@ export function Header({ user, role, department }: { user?: any, role?: string, 
                 ) : (
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full" aria-hidden>
                         <Avatar className="h-8 w-8">
-                            <AvatarImage src={user?.user_metadata?.avatar_url || ''} alt={user?.email || ''} />
+                            <AvatarImage src={avatarUrl || ''} alt={user?.email || ''} />
                             <AvatarFallback>{user?.email?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
                         </Avatar>
                     </Button>

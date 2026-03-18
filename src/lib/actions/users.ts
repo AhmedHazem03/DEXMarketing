@@ -208,6 +208,7 @@ export async function updateProfile(data: {
 
     revalidatePath('/[locale]/(dashboard)/account')
     revalidatePath('/[locale]/(dashboard)/profile')
+    revalidatePath('/', 'layout')
     return { success: true, user: updatedUser }
 }
 

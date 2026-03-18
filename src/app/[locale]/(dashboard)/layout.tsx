@@ -56,21 +56,24 @@ export default async function DashboardLayout({
 
         user = authUser
 
-        // Fetch role, department & active status
+        // Fetch role, department, active status & avatar
         const { data: profile } = await supabase
             .from('users')
-            .select('role, department, is_active')
+            .select('role, department, is_active, avatar_url')
             .eq('id', authUser.id)
             .single()
 
         // Block deactivated users
-        const profileData = profile as { role?: string; department?: string; is_active?: boolean | null } | null
+        const profileData = profile as { role?: string; department?: string; is_active?: boolean | null; avatar_url?: string | null } | null
         if (profileData && profileData.is_active === false) {
             redirect(`/${locale}/blocked`)
         }
 
         role = (profileData?.role || 'client') as string
         department = profileData?.department || null
+        if (profileData?.avatar_url) {
+            user = { ...authUser, db_avatar_url: profileData.avatar_url }
+        }
     } catch (e: any) {
         // Re-throw redirect (Next.js uses a special error for redirect)
         if (e?.digest?.startsWith?.('NEXT_REDIRECT')) throw e
@@ -100,7 +103,7 @@ export default async function DashboardLayout({
         <div className="flex h-screen overflow-hidden bg-background">
             <Sidebar role={role} department={department} />
             <div className="flex flex-col flex-1 overflow-hidden">
-                <Header user={user} role={role} department={department} />
+                <Header user={user} role={role} department={department} avatarUrl={user?.db_avatar_url || user?.user_metadata?.avatar_url} />
                 <main className="flex-1 overflow-y-auto p-8">
                     {children}
                 </main>
