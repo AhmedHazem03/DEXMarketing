@@ -689,10 +689,10 @@ function TaskDetailBody({ task }: { task: TaskWithRelations }) {
                 {task.description && (
                     <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{task.description}</p>
                 )}
-                {task.task_id && (
+                {task.id && (
                     <div className="flex items-center gap-1 mt-1.5 text-xs text-muted-foreground">
                         <Hash className="h-3 w-3" />
-                        <span>{task.task_id}</span>
+                        <span>{task.id.slice(0, 8)}</span>
                     </div>
                 )}
             </div>
