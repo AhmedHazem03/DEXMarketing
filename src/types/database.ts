@@ -249,6 +249,19 @@ export type ClientAccountWithRelations = ClientAccount & {
     transactions?: Transaction[]
 }
 
+export type NotificationType =
+    | 'task'
+    | 'schedule'
+    | 'treasury'
+    | 'advance'
+    | 'user'
+    | 'client'
+    | 'project'
+    | 'client_account'
+    | 'package'
+    | 'chat'
+    | 'general'
+
 export type Notification = {
     id: string
     user_id: string | null
@@ -257,6 +270,8 @@ export type Notification = {
     link: string | null
     is_read: boolean
     created_at: string
+    notification_type: NotificationType
+    entity_id: string | null
 }
 
 export type SiteSetting = {

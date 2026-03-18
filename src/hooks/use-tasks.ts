@@ -623,14 +623,6 @@ export function useForwardTask() {
                 }
             }
 
-            // ── Step 4: Notify the designer ──
-            await supabase.from('notifications').insert({
-                user_id: designerId,
-                title: 'تم تحويل تاسك جديدة إليك',
-                message: `Task: ${task.title}`,
-                link: '/creator',
-            } as never)
-
             return newTask as unknown as TaskWithRelations
         },
         onSuccess: () => {

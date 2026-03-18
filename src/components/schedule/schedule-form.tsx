@@ -278,7 +278,7 @@ export function ScheduleForm({ teamLeaderId, initialDate, schedule, isLoading, o
                                         {(() => {
                                             const q = clientSearch.trim().toLowerCase()
                                             const filtered = q
-                                                ? clients.filter(c => c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.phone?.includes(q))
+                                         ? clients.filter(c => c.name?.toLowerCase().includes(q) || c.email?.toLowerCase().includes(q) || c.phone?.includes(q))
                                                 : clients
                                             if (filtered.length === 0) {
                                                 return (

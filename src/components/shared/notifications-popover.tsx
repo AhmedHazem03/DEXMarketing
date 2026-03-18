@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useLocale } from 'next-intl'
-import { Bell, Check, Info, AlertTriangle, CheckCircle, XCircle, MessageSquare, ClipboardList, DollarSign } from 'lucide-react'
+import { Bell, Check, Info, AlertTriangle, CheckCircle, XCircle, MessageSquare, ClipboardList, DollarSign, Calendar, Banknote, UserPlus, UserCircle, FolderOpen } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ar, enUS } from 'date-fns/locale'
 import { useRouter } from 'next/navigation'
@@ -17,6 +17,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { useNotifications, useMarkNotificationRead, useMarkAllNotificationsRead } from '@/hooks/use-notifications'
 import { useNotificationsRealtime } from '@/hooks/use-realtime'
 import { useCurrentUser } from '@/hooks/use-users'
+import { useNotificationSound } from '@/hooks/use-notification-sound'
 import { Badge } from '@/components/ui/badge'
 
 // Maps each role to its dashboard base path
@@ -82,7 +83,7 @@ export function NotificationsPopover() {
     const isAr = locale === 'ar'
     const [open, setOpen] = useState(false)
     const router = useRouter()
-    const prevUnreadRef = useRef(0)
+    const prevUnreadRef = useRef<number | null>(null)
 
     const { data: currentUser } = useCurrentUser()
     const userId = currentUser?.id || ''
@@ -95,27 +96,63 @@ export function NotificationsPopover() {
     const markAllRead = useMarkAllNotificationsRead()
 
     const unreadCount = notifications?.filter(n => !n.is_read).length || 0
+    const { play: playSound, prime: primeSound } = useNotificationSound()
+    const swRef = useRef<ServiceWorkerRegistration | null>(null)
 
-    // Play notification sound when new unread arrives
+    // Register Service Worker + request Notification permission
     useEffect(() => {
-        if (unreadCount > prevUnreadRef.current && prevUnreadRef.current !== 0) {
-            // Browser notification if permitted
+        if (typeof window === 'undefined') return
+
+        // Request notification permission
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission()
+        }
+
+        // Register the notifications service worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker
+                .register('/sw-notifications.js')
+                .then((reg) => { swRef.current = reg })
+                .catch(() => { /* SW not supported or blocked */ })
+        }
+    }, [])
+
+    // Play sound + show notification when a new unread arrives
+    useEffect(() => {
+        // Skip the very first render (initial load) — just record the baseline
+        if (prevUnreadRef.current === null) {
+            prevUnreadRef.current = unreadCount
+            return
+        }
+        if (unreadCount > prevUnreadRef.current) {
+            // Sound chime
+            playSound()
+
+            // Show notification (Service Worker for background, fallback to Notification API)
             if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
                 const latest = notifications?.find(n => !n.is_read)
                 if (latest) {
-                    new Notification(latest.title, { body: latest.message || '' })
+                    const sw = swRef.current
+                    if (sw?.active) {
+                        // Post to SW — works even when tab is in background / minimized
+                        sw.active.postMessage({
+                            type: 'SHOW_NOTIFICATION',
+                            title: latest.title,
+                            body: latest.message || '',
+                            url: latest.link || '/',
+                        })
+                    } else {
+                        // Fallback: direct notification (works when tab is focused)
+                        new Notification(latest.title, {
+                            body: latest.message || '',
+                            icon: '/images/logo.png',
+                        })
+                    }
                 }
             }
         }
         prevUnreadRef.current = unreadCount
-    }, [unreadCount, notifications])
-
-    // Request browser notification permission
-    useEffect(() => {
-        if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission()
-        }
-    }, [])
+    }, [unreadCount, notifications, playSound])
 
     const handleMarkAllRead = () => {
         markAllRead.mutate(userId)
@@ -134,22 +171,34 @@ export function NotificationsPopover() {
         }
     }
 
-    const getIcon = (title: string) => {
-        const lowerTitle = title.toLowerCase()
-        // Arabic keywords
-        if (lowerTitle.includes('رفض') || lowerTitle.includes('rejected') || lowerTitle.includes('error') || lowerTitle.includes('failed')) return <XCircle className="h-4 w-4 text-red-500" />
-        if (lowerTitle.includes('موافق') || lowerTitle.includes('approved') || lowerTitle.includes('success') || lowerTitle.includes('completed') || lowerTitle.includes('تمت')) return <CheckCircle className="h-4 w-4 text-green-500" />
-        if (lowerTitle.includes('تعديل') || lowerTitle.includes('revision') || lowerTitle.includes('warning') || lowerTitle.includes('alert')) return <AlertTriangle className="h-4 w-4 text-yellow-500" />
-        if (lowerTitle.includes('رسالة') || lowerTitle.includes('message') || lowerTitle.includes('chat')) return <MessageSquare className="h-4 w-4 text-purple-500" />
-        if (lowerTitle.includes('مهمة') || lowerTitle.includes('task') || lowerTitle.includes('طلب')) return <ClipboardList className="h-4 w-4 text-orange-500" />
-        if (lowerTitle.includes('مصروف') || lowerTitle.includes('إيراد') || lowerTitle.includes('treasury') || lowerTitle.includes('transaction')) return <DollarSign className="h-4 w-4 text-emerald-500" />
-        return <Info className="h-4 w-4 text-blue-500" />
+    const getIcon = (notification: { notification_type?: string; title: string }) => {
+        switch (notification.notification_type) {
+            case 'task':           return <ClipboardList className="h-4 w-4 text-orange-500" />
+            case 'schedule':       return <Calendar      className="h-4 w-4 text-blue-500" />
+            case 'treasury':       return <DollarSign    className="h-4 w-4 text-emerald-500" />
+            case 'advance':        return <Banknote      className="h-4 w-4 text-amber-500" />
+            case 'user':           return <UserPlus      className="h-4 w-4 text-purple-500" />
+            case 'client':         return <UserCircle    className="h-4 w-4 text-cyan-500" />
+            case 'project':        return <FolderOpen    className="h-4 w-4 text-indigo-500" />
+            case 'client_account': return <DollarSign    className="h-4 w-4 text-teal-500" />
+            case 'chat':           return <MessageSquare className="h-4 w-4 text-purple-500" />
+            default: {
+                // Legacy fallback: keyword-based for older 'general' notifications
+                const t = notification.title.toLowerCase()
+                if (t.includes('رفض') || t.includes('rejected'))     return <XCircle       className="h-4 w-4 text-red-500" />
+                if (t.includes('موافق') || t.includes('approved') || t.includes('تمت')) return <CheckCircle className="h-4 w-4 text-green-500" />
+                if (t.includes('تعديل') || t.includes('revision'))   return <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                if (t.includes('رسالة') || t.includes('message'))    return <MessageSquare className="h-4 w-4 text-purple-500" />
+                if (t.includes('مهمة')  || t.includes('task'))       return <ClipboardList className="h-4 w-4 text-orange-500" />
+                return <Info className="h-4 w-4 text-blue-500" />
+            }
+        }
     }
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
-                <Button variant="ghost" size="icon" className="relative">
+                <Button variant="ghost" size="icon" className="relative" onClick={primeSound}>
                     <Bell className="h-5 w-5" />
                     {unreadCount > 0 && (
                         <span className="absolute top-1.5 end-1.5 bg-red-500 text-white text-[10px] w-4 h-4 rounded-full flex items-center justify-center border-2 border-background">
@@ -191,7 +240,7 @@ export function NotificationsPopover() {
                                     onClick={() => handleNotificationClick(notification.id, notification.is_read || false, notification.link)}
                                 >
                                     <div className="mt-1">
-                                        {getIcon(notification.title)}
+                                        {getIcon(notification)}
                                     </div>
                                     <div className="flex-1 space-y-1">
                                         <p className={`text-sm ${notification.is_read ? 'text-muted-foreground' : 'font-medium'}`}>
